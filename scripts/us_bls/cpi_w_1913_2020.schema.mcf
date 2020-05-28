@@ -1,0 +1,8 @@
+Node: dcid:CPI-W
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+measurementMethod: BLS_Unchained, BLS_SeasonallyUnadjusted
+consumer: dcs:Wage
+unit: IndexPointBasePeriod1982-84=100
