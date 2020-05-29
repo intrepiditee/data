@@ -1,6 +1,0 @@
-Node: E:cpi_w_1913_2020->E1
-typeOf: StatVarObservation
-variableMeasured: CPI-W
-observationAbout: country/USA
-observationDate: C:cpi_w_1913_2020->date
-value: C:cpi_w_1913_2020->cpi

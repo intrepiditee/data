@@ -1,8 +1,0 @@
-Node: dcid:CPI-U
-typeOf: dcs:StatisticalVariable
-populationType: dcs:ConsumerGoodsAndServices
-measuredProperty: dcs:price
-statType: dcs:measuredValue
-measurementMethod: BLS_Unchained, BLS_SeasonallyUnadjusted
-consumer: dcs:Urban
-unit: IndexPointBasePeriod1982-84=100
