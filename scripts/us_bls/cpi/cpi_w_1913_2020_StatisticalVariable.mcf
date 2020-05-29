@@ -1,0 +1,7 @@
+Node: dcid:US_CPI-W
+name: "US_CPI-W"
+typeOf: StatisticalVariable
+populationType: ConsumerGoodsAndServices
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+consumer: dcs:UrbanWageEarnerAndClericalWorker
