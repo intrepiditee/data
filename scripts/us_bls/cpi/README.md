@@ -2,7 +2,7 @@
 
 This directory contains data and scripts for importing
 [U.S. Bureau of Labor Statistics Consumer Price Index
-](https://data.bls.gov/cgi-bin/surveymost?cu) into Data Commons.
+](https://www.bls.gov/cpi/data.htm) into Data Commons.
 
 ## Raw Data
 1. [c_cpi_u_1999_2020.xlsx](c_cpi_u_1999_2020.xlsx) contains Chained CPI for
