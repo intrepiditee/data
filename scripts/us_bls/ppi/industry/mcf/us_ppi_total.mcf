@@ -1,0 +1,7 @@
+Node: dcid:US_PPI_Total_Manufacturing
+name: "US_PPI_Total_Manufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1984-12=100

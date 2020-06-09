@@ -1,0 +1,207 @@
+Node: dcid:US_PPI_TruckTransportationOfFreight
+name: "US_PPI_TruckTransportationOfFreight"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:TruckTransportationOfFreight
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2009-06=100
+
+Node: dcid:US_PPI_Meats
+name: "US_PPI_Meats"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:Meats
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982=100
+
+Node: dcid:US_PPI_PreparedAnimalFeeds
+name: "US_PPI_PreparedAnimalFeeds"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:PreparedAnimalFeeds
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982=100
+
+Node: dcid:US_PPI_AirlinePassengerServices
+name: "US_PPI_AirlinePassengerServices"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:AirlinePassengerServices
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2008-12=100
+
+Node: dcid:US_PPI_FoodAndAlcoholRetailing
+name: "US_PPI_FoodAndAlcoholRetailing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:FoodAndAlcoholRetailing
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2009-03=100
+
+Node: dcid:US_PPI_Lumber
+name: "US_PPI_Lumber"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:Lumber
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982=100
+
+Node: dcid:US_PPI_BusinessLoansPartial
+name: "US_PPI_BusinessLoansPartial"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:BusinessLoansPartial
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2009-04=100
+
+Node: dcid:US_PPI_CrudePetroleumDomesticProduction
+name: "US_PPI_CrudePetroleumDomesticProduction"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:CrudePetroleumDomesticProduction
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982=100
+
+Node: dcid:US_PPI_AllCommodities
+name: "US_PPI_AllCommodities"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:AllCommodities
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982=100
+
+Node: dcid:US_PPI_MotorVehicles
+name: "US_PPI_MotorVehicles"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:MotorVehicles
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982=100
+
+Node: dcid:US_PPI_OutpatientCarePartial
+name: "US_PPI_OutpatientCarePartial"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:OutpatientCarePartial
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2009-06=100
+
+Node: dcid:US_PPI_SteelMillProducts
+name: "US_PPI_SteelMillProducts"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:SteelMillProducts
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982=100
+
+Node: dcid:US_PPI_PharmaceuticalPreparations
+name: "US_PPI_PharmaceuticalPreparations"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:PharmaceuticalPreparations
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2001-06=100
+
+Node: dcid:US_PPI_Gasoline
+name: "US_PPI_Gasoline"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:Gasoline
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982=100
+
+Node: dcid:US_PPI_No2DieselFuel
+name: "US_PPI_No2DieselFuel"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:No2DieselFuel
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982=100
+
+Node: dcid:US_PPI_LegalServices
+name: "US_PPI_LegalServices"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:LegalServices
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2009-03=100
+
+Node: dcid:US_PPI_MachineryAndEquipmentAndPartsAndSuppliesWholesaling
+name: "US_PPI_MachineryAndEquipmentAndPartsAndSuppliesWholesaling"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:MachineryAndEquipmentAndPartsAndSuppliesWholesaling
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2009-06=100
+
+Node: dcid:US_PPI_InpatientCare
+name: "US_PPI_InpatientCare"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:InpatientCare
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2009-06=100
+
+Node: dcid:US_PPI_ApparelJewelryFootwearAndAccessoriesRetailing
+name: "US_PPI_ApparelJewelryFootwearAndAccessoriesRetailing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:ApparelJewelryFootwearAndAccessoriesRetailing
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2009-06=100
+
+Node: dcid:US_PPI_SecuritiesBrokerageDealingInvestmentAdviceAndRelatedServices
+name: "US_PPI_SecuritiesBrokerageDealingInvestmentAdviceAndRelatedServices"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:SecuritiesBrokerageDealingInvestmentAdviceAndRelatedServices
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2009-06=100
+
+Node: dcid:US_PPI_CarbonSteelScrap
+name: "US_PPI_CarbonSteelScrap"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:CarbonSteelScrap
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1986-12=100
+
+Node: dcid:US_PPI_Grains
+name: "US_PPI_Grains"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:Grains
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982=100
+
+Node: dcid:US_PPI_IndustrialChemicals
+name: "US_PPI_IndustrialChemicals"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+commodity: dcs:IndustrialChemicals
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982=100
+

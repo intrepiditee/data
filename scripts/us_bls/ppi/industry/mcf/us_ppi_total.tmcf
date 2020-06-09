@@ -1,0 +1,6 @@
+Node: E:us_ppi_total->E1
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_Total_Manufacturing
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_total->date
+value: C:us_ppi_total->ppi

@@ -1,0 +1,6 @@
+Node: E:us_ppi_all->E1
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_AllCommodities
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_all->date
+value: C:us_ppi_all->ppi
