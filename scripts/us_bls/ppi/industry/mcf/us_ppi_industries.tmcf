@@ -1,0 +1,273 @@
+Node: E:us_ppi_industries->E1
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_221122
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->221122_2003-12_ElectricPowerDistribution
+
+Node: E:us_ppi_industries->E2
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_311421
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->311421_1981-06_FruitAndVegetableCanning
+
+Node: E:us_ppi_industries->E3
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_324191
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->324191_1980-12_PetroleumLubricatingOilAndGreaseManufacturing
+
+Node: E:us_ppi_industries->E4
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_325120
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->325120_2003-12_IndustrialGasManufacturing
+
+Node: E:us_ppi_industries->E5
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_325
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->325_1984-12_ChemicalManufacturing
+
+Node: E:us_ppi_industries->E6
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_325180
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->325180_1983-12_OtherBasicInorganicChemicalManufacturing
+
+Node: E:us_ppi_industries->E7
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_325199
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->325199_1982-12_AllOtherBasicOrganicChemicalManufacturing
+
+Node: E:us_ppi_industries->E8
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_325211
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->325211_1980-12_PlasticsMaterialAndResinManufacturing
+
+Node: E:us_ppi_industries->E9
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_325212
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->325212_1981-06_SyntheticRubberManufacturing
+
+Node: E:us_ppi_industries->E10
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_325412
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->325412_1981-06_PharmaceuticalPreparationManufacturing
+
+Node: E:us_ppi_industries->E11
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_325510
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->325510_1983-06_PaintAndCoatingManufacturing
+
+Node: E:us_ppi_industries->E12
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_331110
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->331110_1982-06_IronAndSteelMillsAndFerroalloyManufacturing
+
+Node: E:us_ppi_industries->E13
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_331315
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->331315_1981-06_AluminumSheetPlateAndFoilManufacturing
+
+Node: E:us_ppi_industries->E14
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_332322
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->332322_1982-12_SheetMetalWorkManufacturing
+
+Node: E:us_ppi_industries->E15
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_332510
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->332510_1985-06_HardwareManufacturing
+
+Node: E:us_ppi_industries->E16
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_332618
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->332618_1982-12_OtherFabricatedWireProductManufacturing
+
+Node: E:us_ppi_industries->E17
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_332911
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->332911_1991-06_IndustrialValveManufacturing
+
+Node: E:us_ppi_industries->E18
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_332991
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->332991_1983-06_BallAndRollerBearingManufacturing
+
+Node: E:us_ppi_industries->E19
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_333120
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->333120_1980-12_ConstructionMachineryManufacturing
+
+Node: E:us_ppi_industries->E20
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_333132
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->333132_1980-12_OilAndGasFieldMachineryAndEquipmentManufacturing
+
+Node: E:us_ppi_industries->E21
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_333611
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->333611_1982-06_TurbineAndTurbineGeneratorSetUnitsManufacturing
+
+Node: E:us_ppi_industries->E22
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_33441
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->33441_2011-12_SemiconductorAndOtherElectronicComponentManufacturing
+
+Node: E:us_ppi_industries->E23
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_335311
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->335311_1981-06_PowerDistributionAndSpecialtyTransformerManufacturing
+
+Node: E:us_ppi_industries->E24
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_335313
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->335313_1985-06_SwitchgearAndSwitchboardApparatusManufacturing
+
+Node: E:us_ppi_industries->E25
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_335931
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->335931_1981-12_CurrentCarryingWiringDeviceManufacturing
+
+Node: E:us_ppi_industries->E26
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_33611
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->33611_1982-06_AutomobileAndLightDutyMotorVehicleManufacturing
+
+Node: E:us_ppi_industries->E27
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_336412
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->336412_1985-12_AircraftEngineAndEnginePartsManufacturing
+
+Node: E:us_ppi_industries->E28
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_336413
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->336413_1985-06_OtherAircraftPartsAndAuxiliaryEquipmentManufacturing
+
+Node: E:us_ppi_industries->E29
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_4242
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->4242_2009-02_DrugsAndDruggistsSundriesMerchantWholesalers
+
+Node: E:us_ppi_industries->E30
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_4244
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->4244_2009-02_GroceryAndRelatedProductMerchantWholesalers
+
+Node: E:us_ppi_industries->E31
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_441110
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->441110_1999-12_NewCarDealers
+
+Node: E:us_ppi_industries->E32
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_481111
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->481111_1989-12_ScheduledPassengerAirTransportation
+
+Node: E:us_ppi_industries->E33
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_482111
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->482111_1984-12_LineHaulRailroads
+
+Node: E:us_ppi_industries->E34
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_445110
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->445110_1999-12_SupermarketsAndOtherGroceryExceptConvenienceStores
+
+Node: E:us_ppi_industries->E35
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_484
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->484_2003-12_TruckTransportation
+
+Node: E:us_ppi_industries->E36
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_484121
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->484121_1992-06_GeneralFreightTruckingLongDistanceTruckload
+
+Node: E:us_ppi_industries->E37
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_532412
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->532412_2003-12_ConstructionMiningAndForestryMachineryAndEquipmentRentalAndLeasing
+
+Node: E:us_ppi_industries->E38
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_621111
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->621111_1993-12_OfficesOfPhysiciansExceptMentalHealthSpecialists
+
+Node: E:us_ppi_industries->E39
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_622110
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_industries->date
+value: C:us_ppi_industries->622110_1992-12_GeneralMedicalAndSurgicalHospitals
+

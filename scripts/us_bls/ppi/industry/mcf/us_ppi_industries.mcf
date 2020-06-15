@@ -1,0 +1,351 @@
+Node: dcid:US_PPI_221122
+name: "US_PPI_ElectricPowerDistribution"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/221122
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2003-12=100
+
+Node: dcid:US_PPI_311421
+name: "US_PPI_FruitAndVegetableCanning"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/311421
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1981-06=100
+
+Node: dcid:US_PPI_324191
+name: "US_PPI_PetroleumLubricatingOilAndGreaseManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/324191
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1980-12=100
+
+Node: dcid:US_PPI_325120
+name: "US_PPI_IndustrialGasManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/325120
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2003-12=100
+
+Node: dcid:US_PPI_325
+name: "US_PPI_ChemicalManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/325
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1984-12=100
+
+Node: dcid:US_PPI_325180
+name: "US_PPI_OtherBasicInorganicChemicalManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/325180
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1983-12=100
+
+Node: dcid:US_PPI_325199
+name: "US_PPI_AllOtherBasicOrganicChemicalManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/325199
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982-12=100
+
+Node: dcid:US_PPI_325211
+name: "US_PPI_PlasticsMaterialAndResinManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/325211
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1980-12=100
+
+Node: dcid:US_PPI_325212
+name: "US_PPI_SyntheticRubberManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/325212
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1981-06=100
+
+Node: dcid:US_PPI_325412
+name: "US_PPI_PharmaceuticalPreparationManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/325412
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1981-06=100
+
+Node: dcid:US_PPI_325510
+name: "US_PPI_PaintAndCoatingManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/325510
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1983-06=100
+
+Node: dcid:US_PPI_331110
+name: "US_PPI_IronAndSteelMillsAndFerroalloyManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/331110
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982-06=100
+
+Node: dcid:US_PPI_331315
+name: "US_PPI_AluminumSheetPlateAndFoilManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/331315
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1981-06=100
+
+Node: dcid:US_PPI_332322
+name: "US_PPI_SheetMetalWorkManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/332322
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982-12=100
+
+Node: dcid:US_PPI_332510
+name: "US_PPI_HardwareManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/332510
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1985-06=100
+
+Node: dcid:US_PPI_332618
+name: "US_PPI_OtherFabricatedWireProductManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/332618
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982-12=100
+
+Node: dcid:US_PPI_332911
+name: "US_PPI_IndustrialValveManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/332911
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1991-06=100
+
+Node: dcid:US_PPI_332991
+name: "US_PPI_BallAndRollerBearingManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/332991
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1983-06=100
+
+Node: dcid:US_PPI_333120
+name: "US_PPI_ConstructionMachineryManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/333120
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1980-12=100
+
+Node: dcid:US_PPI_333132
+name: "US_PPI_OilAndGasFieldMachineryAndEquipmentManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/333132
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1980-12=100
+
+Node: dcid:US_PPI_333611
+name: "US_PPI_TurbineAndTurbineGeneratorSetUnitsManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/333611
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982-06=100
+
+Node: dcid:US_PPI_33441
+name: "US_PPI_SemiconductorAndOtherElectronicComponentManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/33441
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2011-12=100
+
+Node: dcid:US_PPI_335311
+name: "US_PPI_PowerDistributionAndSpecialtyTransformerManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/335311
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1981-06=100
+
+Node: dcid:US_PPI_335313
+name: "US_PPI_SwitchgearAndSwitchboardApparatusManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/335313
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1985-06=100
+
+Node: dcid:US_PPI_335931
+name: "US_PPI_CurrentCarryingWiringDeviceManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/335931
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1981-12=100
+
+Node: dcid:US_PPI_33611
+name: "US_PPI_AutomobileAndLightDutyMotorVehicleManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/33611
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1982-06=100
+
+Node: dcid:US_PPI_336412
+name: "US_PPI_AircraftEngineAndEnginePartsManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/336412
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1985-12=100
+
+Node: dcid:US_PPI_336413
+name: "US_PPI_OtherAircraftPartsAndAuxiliaryEquipmentManufacturing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/336413
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1985-06=100
+
+Node: dcid:US_PPI_4242
+name: "US_PPI_DrugsAndDruggistsSundriesMerchantWholesalers"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/4242
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2009-02=100
+
+Node: dcid:US_PPI_4244
+name: "US_PPI_GroceryAndRelatedProductMerchantWholesalers"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/4244
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2009-02=100
+
+Node: dcid:US_PPI_441110
+name: "US_PPI_NewCarDealers"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/441110
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1999-12=100
+
+Node: dcid:US_PPI_481111
+name: "US_PPI_ScheduledPassengerAirTransportation"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/481111
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1989-12=100
+
+Node: dcid:US_PPI_482111
+name: "US_PPI_LineHaulRailroads"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/482111
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1984-12=100
+
+Node: dcid:US_PPI_445110
+name: "US_PPI_SupermarketsAndOtherGroceryExceptConvenienceStores"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/445110
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1999-12=100
+
+Node: dcid:US_PPI_484
+name: "US_PPI_TruckTransportation"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/484
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2003-12=100
+
+Node: dcid:US_PPI_484121
+name: "US_PPI_GeneralFreightTruckingLongDistanceTruckload"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/484121
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1992-06=100
+
+Node: dcid:US_PPI_532412
+name: "US_PPI_ConstructionMiningAndForestryMachineryAndEquipmentRentalAndLeasing"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/532412
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod2003-12=100
+
+Node: dcid:US_PPI_621111
+name: "US_PPI_OfficesOfPhysiciansExceptMentalHealthSpecialists"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/621111
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1993-12=100
+
+Node: dcid:US_PPI_622110
+name: "US_PPI_GeneralMedicalAndSurgicalHospitals"
+typeOf: dcs:StatisticalVariable
+populationType: dcs:ConsumerGoodsAndServices
+naics: dcid:NAICS/622110
+measuredProperty: dcs:price
+statType: dcs:measuredValue
+unit: dcs:IndexPointBasePeriod1992-12=100
+
