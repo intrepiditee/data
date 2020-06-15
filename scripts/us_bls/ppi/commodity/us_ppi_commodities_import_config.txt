@@ -1,0 +1,8 @@
+import: {
+    import_name: "USBLS_ProducerPriceCommodities"
+    provenance_url: "https://www.bls.gov/ppi/"
+    provenance_description: "U.S. Bureau of Labor Statistics Producer Price Index"
+    mcf_url: "gs://resolved_mcf/external_tables/us_ppi_commodities/nodes.mcf-00000-of-00001"
+    start_date: "1913-01-11"
+    update_frequency: "P1M"
+}

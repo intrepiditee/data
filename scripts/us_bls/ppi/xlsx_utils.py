@@ -1,10 +1,24 @@
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 '''
 Utility functions for dealing with xlsx files downloaded from BLS.
 '''
 
 import numpy as np
 import pandas as pd
-
+import requests
 
 def read_xlsx(path, extra_keys=[]):
     '''Reads in a BLS xlsx file containing time series data and converts it to
@@ -66,3 +80,28 @@ def read_xlsx(path, extra_keys=[]):
     csv_df.columns = ["value"]
 
     return csv_df, series_id, base_date, extras_dict
+
+
+def request_excel(series_id):
+    '''Requests the PPI series and returns the Response.
+    
+    Args:
+        series_id: The ID of the series as a string.
+    '''
+    form = {
+        "request_action": "get_data",
+        "reformat": "true",
+        "from_results_page": "true",
+        "years_option": "specific_years",
+        "delimiter": "comma",
+        "output_type": "multi",
+        "periods_option": "all_periods",
+        "output_view": "data",
+        "from_year": "1000",
+        "output_format": "excelTable",
+        "original_output_type": "default",
+        "annualAveragesRequested": "false",
+        "series_id": f"{series_id}"
+    }
+    return requests.post(
+        "https://data.bls.gov/pdq/SurveyOutputServlet", data=form)

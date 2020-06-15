@@ -64,7 +64,7 @@ flags.DEFINE_boolean(
 
 import requests
 import pandas as pd
-from xlsx_utils import read_xlsx
+from xlsx_utils import read_xlsx, request_excel
 
 
 NAICS_URL = '''
@@ -99,32 +99,6 @@ def get_naics_dict():
     in_df.dropna(inplace=True)
     return pd.Series(
         data=in_df[name_col].values, index=in_df[code_col].values).to_dict()
-
-
-def request_excel(series_id):
-    '''Requests the PPI series and returns the Response.
-    
-    Args:
-        series_id: The ID of the series as a string.
-    '''
-    form = {
-        "request_action": "get_data",
-        "reformat": "true",
-        "from_results_page": "true",
-        "years_option": "specific_years",
-        "delimiter": "comma",
-        "output_type": "multi",
-        "periods_option": "all_periods",
-        "output_view": "data",
-        "from_year": "1000",
-        "output_format": "excelTable",
-        "original_output_type": "default",
-        "annualAveragesRequested": "false",
-        "series_id": f"{series_id}"
-    }
-    return requests.post(
-        "https://data.bls.gov/pdq/SurveyOutputServlet", data=form)
-
 
 
 def generate_csv_industries():
@@ -185,7 +159,8 @@ def generate_csv_average():
 
 
 def generate_mcf():
-    '''Generates the StatisticalVariable instance and template MCFs.'''
+    '''Generates the StatisticalVariable instance and template MCFs for
+    the industry specific PPI series .'''
 
     variable_template = ( 
         'Node: dcid:US_PPI_{naics_id}\n'

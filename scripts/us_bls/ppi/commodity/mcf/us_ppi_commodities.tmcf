@@ -1,0 +1,161 @@
+Node: E:us_ppi_commodities->E1
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_MotorVehicles
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->MotorVehicles_1982
+
+Node: E:us_ppi_commodities->E2
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_PharmaceuticalPreparations
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->PharmaceuticalPreparations_2001-06
+
+Node: E:us_ppi_commodities->E3
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_Gasoline
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->Gasoline_1982
+
+Node: E:us_ppi_commodities->E4
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_Meats
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->Meats_1982
+
+Node: E:us_ppi_commodities->E5
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_IndustrialChemicals
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->IndustrialChemicals_1982
+
+Node: E:us_ppi_commodities->E6
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_Lumber
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->Lumber_1982
+
+Node: E:us_ppi_commodities->E7
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_SteelMillProducts
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->SteelMillProducts_1982
+
+Node: E:us_ppi_commodities->E8
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_No2DieselFuel
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->No2DieselFuel_1982
+
+Node: E:us_ppi_commodities->E9
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_PreparedAnimalFeeds
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->PreparedAnimalFeeds_1982
+
+Node: E:us_ppi_commodities->E10
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_CrudePetroleumDomesticProduction
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->CrudePetroleumDomesticProduction_1982
+
+Node: E:us_ppi_commodities->E11
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_Grains
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->Grains_1982
+
+Node: E:us_ppi_commodities->E12
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_CarbonSteelScrap
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->CarbonSteelScrap_1986-12
+
+Node: E:us_ppi_commodities->E13
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_OutpatientCarePartial
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->OutpatientCarePartial_2009-06
+
+Node: E:us_ppi_commodities->E14
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_InpatientCare
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->InpatientCare_2009-06
+
+Node: E:us_ppi_commodities->E15
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_FoodAndAlcoholRetailing
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->FoodAndAlcoholRetailing_2009-03
+
+Node: E:us_ppi_commodities->E16
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_ApparelJewelryFootwearAndAccessoriesRetailing
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->ApparelJewelryFootwearAndAccessoriesRetailing_2009-06
+
+Node: E:us_ppi_commodities->E17
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_AirlinePassengerServices
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->AirlinePassengerServices_2008-12
+
+Node: E:us_ppi_commodities->E18
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_SecuritiesBrokerageDealingInvestmentAdviceAndRelatedServices
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->SecuritiesBrokerageDealingInvestmentAdviceAndRelatedServices_2009-06
+
+Node: E:us_ppi_commodities->E19
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_BusinessLoansPartial
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->BusinessLoansPartial_2009-04
+
+Node: E:us_ppi_commodities->E20
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_LegalServices
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->LegalServices_2009-03
+
+Node: E:us_ppi_commodities->E21
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_TruckTransportationOfFreight
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->TruckTransportationOfFreight_2009-06
+
+Node: E:us_ppi_commodities->E22
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_MachineryAndEquipmentAndPartsAndSuppliesWholesaling
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->MachineryAndEquipmentAndPartsAndSuppliesWholesaling_2009-06
+
+Node: E:us_ppi_commodities->E23
+typeOf: dcs:StatVarObservation
+variableMeasured: dcs:US_PPI_AllCommodities
+observationAbout: dcid:country/USA
+observationDate: C:us_ppi_commodities->date
+value: C:us_ppi_commodities->AllCommodities_1982
+
