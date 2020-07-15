@@ -4,6 +4,8 @@ import flask
 
 from app import utils
 from app import configs
+from app.service import gcs_io
+from app.service import dashboard_api
 from app.executor import executor
 
 
@@ -29,13 +31,19 @@ def execute_imports():
     pr_number = task_info.get('PR_NUMBER')
 
     return executor.execute_imports_on_commit(
-        commit_sha, repo_name, branch_name, pr_number)
+        commit_sha,
+        gcs_io.GCSBucketIO(),
+        dashboard_api.DashboardAPI(),
+        repo_name, branch_name, pr_number)
 
 
 @FLASK_APP.route('/update', methods=['POST'])
 def scheduled_updates():
     task_info = flask.request.get_json(force=True)
-    return executor.execute_imports_on_update(task_info['absolute_import_name'])
+    return executor.execute_imports_on_update(
+        task_info['absolute_import_name'],
+        gcs_io.GCSBucketIO(),
+        dashboard_api.DashboardAPI())
 
 
 @FLASK_APP.route('/_ah/start')
