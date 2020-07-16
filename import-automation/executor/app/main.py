@@ -46,6 +46,28 @@ def scheduled_updates():
         dashboard_api.DashboardAPI())
 
 
+@FLASK_APP.route('/standalone', methods=['POST'])
+def standalone_execute_imports():
+    task_info = flask.request.get_json(force=True)
+    commit_sha = task_info['COMMIT_SHA']
+    repo_name = task_info.get('REPO_NAME')
+    branch_name = task_info.get('BRANCH_NAME')
+    pr_number = task_info.get('PR_NUMBER')
+
+    return executor.execute_imports_on_commit(
+        commit_sha,
+        gcs_io.GCSBucketIO(),
+        repo_name=repo_name, branch_name=branch_name, pr_number=pr_number)
+
+
+@FLASK_APP.route('/standalone/update', methods=['POST'])
+def standalone_scheduled_updates():
+    task_info = flask.request.get_json(force=True)
+    return executor.execute_imports_on_update(
+        task_info['absolute_import_name'],
+        gcs_io.GCSBucketIO())
+
+
 @FLASK_APP.route('/_ah/start')
 def start():
     return ''

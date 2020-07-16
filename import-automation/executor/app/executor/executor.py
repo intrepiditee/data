@@ -9,7 +9,6 @@ import traceback
 from app import configs
 from app.service import dashboard_api
 from app.service import github_api
-from app.service import gcs_io
 from app.executor import validation
 from app import utils
 
@@ -194,20 +193,19 @@ def execute_imports_on_commit(commit_sha, bucket_io, dashboard=None,
         return _execute_imports_on_commit_helper(commit_sha, bucket_io, dashboard, run_id)
     except Exception:
         logging.exception('An exception happened')
+        message = utils.list_to_str(traceback.format_exc(), '')
         if dashboard:
-            mark_system_run_failed(run_id)
-        return utils.list_to_str(traceback.format_exc(), '')
+            mark_system_run_failed(run_id, message, dashboard)
+        return message
 
 
-def mark_system_run_failed(run_id):
-    dashboard = dashboard_api.DashboardAPI()
-    dashboard.critical('Failed', run_id=run_id)
+def mark_system_run_failed(run_id, message, dashboard):
+    dashboard.critical(message, run_id=run_id)
     return dashboard.update_run({'status': 'failed'}, run_id=run_id)
 
 
-def mark_import_attempt_failed(attempt_id):
-    dashboard = dashboard_api.DashboardAPI()
-    dashboard.critical('Failed', attempt_id=attempt_id)
+def mark_import_attempt_failed(attempt_id, message, dashboard):
+    dashboard.critical(message, attempt_id=attempt_id)
     return dashboard.update_attempt({'status': 'failed'}, attempt_id=attempt_id)
 
 
@@ -258,10 +256,11 @@ def execute_imports_on_update(absolute_import_name, bucket_io, dashboard=None):
         return _execute_imports_on_update_helper(
             absolute_import_name, run_id, bucket_io, dashboard)
     except Exception:
-        logging.exception()
+        logging.exception('An exception happended')
+        message = utils.list_to_str(traceback.format_exc(), '')
         if dashboard:
-            mark_system_run_failed(run_id)
-        return utils.list_to_str(traceback.format_exc(), '')
+            mark_system_run_failed(run_id, message, dashboard)
+        return message
 
 
 def _init_attempt(dashboard, run_id, import_name, absolute_import_name,
@@ -357,5 +356,9 @@ def import_one(dir_path, import_spec, bucket_io, dashboard=None, run_id=None, at
     try:
         return _import_one_helper(dir_path, import_spec, bucket_io, dashboard, run_id, attempt_id)
     except Exception as e:
-        mark_import_attempt_failed(attempt_id)
+        if dashboard:
+            mark_import_attempt_failed(
+                attempt_id,
+                utils.list_to_str(traceback.format_exc(), ''),
+                dashboard)
         raise e
