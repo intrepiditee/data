@@ -306,7 +306,7 @@ def _import_one_helper(dir_path, import_spec, bucket_io, dashboard=None, run_id=
                 dashboard.log(log)
             process.check_returncode()
 
-    time = utils.pttime().replace(':', '_')
+    time = utils.pttime().replace(':', '_').replace('-', '_').replace('.', '_')
     path_prefix = f'{dir_path}/{import_spec["import_name"]}'
     import_inputs = import_spec.get('import_inputs', [])
     bucket_io.prefix = path_prefix
