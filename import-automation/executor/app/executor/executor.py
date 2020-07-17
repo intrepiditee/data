@@ -38,7 +38,7 @@ def parse_commit_message_targets(commit_message):
     Returns:
         A list of import names each as a string.
     """
-    target_lists = re.findall(r'(?:IMPORTS=)((?:\w+)(?:,\w+)*)', commit_message)
+    target_lists = re.findall(r'(?:IMPORTS=)((?:[\w/]+)(?:,[\w/]+)*)', commit_message)
     targets = set()
     for target_list in target_lists:
         targets.update(target_list.split(','))

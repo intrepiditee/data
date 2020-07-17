@@ -5,12 +5,16 @@ from app import utils
 from app.executor import executor
 from app.service import gcs_io
 
+_IMPORT_NAME_FORM = '''
+<path to the directory containing the manifest>:<import name>
+'''.strip()
+
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
     'import_name',
     None,
-    'Absolute import name of the import to executor of the form <path to the '
-    'directory containing the import>:<import name>.',
+    'Absolute import name of the import to execute of the form '
+    f'{_IMPORT_NAME_FORM}.',
     short_name='i')
 flags.DEFINE_string(
     'output_dir',
@@ -21,8 +25,7 @@ flags.mark_flag_as_required('import_name')
 flags.register_validator('import_name',
                          utils.absolute_import_name,
                          message='--import_name must be of the form '
-                                 '<path tothe directory containing the import>:'
-                                 '<import name>.')
+                                 f'{_IMPORT_NAME_FORM}.')
 
 
 def main(_):

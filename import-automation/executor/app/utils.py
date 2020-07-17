@@ -28,7 +28,7 @@ def get_absolute_import_name(dir_path, import_name):
 
 
 def absolute_import_name(import_name):
-    return re.fullmatch(r'\w:\w', import_name) is not None
+    return re.fullmatch(r'[\w/]+:[\w/]+', import_name) is not None
 
 
 def relative_import_name(import_name):
