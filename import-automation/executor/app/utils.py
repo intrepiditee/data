@@ -27,8 +27,12 @@ def get_absolute_import_name(dir_path, import_name):
     return '{}:{}'.format(dir_path, import_name)
 
 
+def absolute_import_name(import_name):
+    return re.fullmatch(r'\w:\w', import_name) is not None
+
+
 def relative_import_name(import_name):
-    return ':' not in import_name
+    return not absolute_import_name(import_name)
 
 
 def split_relative_import_name(import_name):
@@ -39,8 +43,8 @@ def get_relative_import_names(import_names):
     return list(name for name in import_names if relative_import_name(name))
 
 
-def list_to_str(a_list, sep=','):
-    return (sep + ' ').join(a_list)
+def list_to_str(a_list, sep=', '):
+    return sep.join(a_list)
 
 
 def get_filename(response):

@@ -4,11 +4,11 @@ import os
 import subprocess
 import tempfile
 import logging
+import traceback
 
 from app import configs
 from app.service import dashboard_api
 from app.service import github_api
-from app.service import gcs_io
 from app.executor import validation
 from app import utils
 
@@ -86,8 +86,9 @@ def create_venv(requirements_path, venv_dir,
         return os.path.join(venv_dir, 'bin/python'), process
 
 
-def run_user_script(interpreter_path, script_path, args=[],
-                    timeout=configs.USER_SCRIPT_TIMEOUT):
+def run_user_script(
+        interpreter_path, script_path,
+        args=(), timeout=configs.USER_SCRIPT_TIMEOUT):
     """Runs a user script.
 
     Args:
@@ -110,8 +111,10 @@ def run_user_script(interpreter_path, script_path, args=[],
                             timeout)
 
 
-def _execute_imports_on_commit_helper(commit_sha, run_id):
-    dashboard = dashboard_api.DashboardAPI()
+def _execute_imports_on_commit_helper(
+        commit_sha, bucket_io,
+        dashboard=None, run_id=None):
+
     github = github_api.GitHubRepoAPI()
 
     commit_info = github.query_commit(commit_sha)
@@ -130,7 +133,8 @@ def _execute_imports_on_commit_helper(commit_sha, run_id):
         cwd = os.path.join(tmpdir, repo_dirname)
         os.chdir(cwd)
 
-        dashboard.info(f'Downloaded repo: {repo_dirname}', run_id=run_id)
+        if dashboard:
+            dashboard.info(f'Downloaded repo: {repo_dirname}', run_id=run_id)
 
         import_all = 'all' in import_targets
         for dir_path in manifest_dirs:
@@ -149,18 +153,29 @@ def _execute_imports_on_commit_helper(commit_sha, run_id):
                     absolute_all in import_targets):
 
                     import_name = spec['import_name']
-                    attempt_id = _init_attempt(
-                        run_id,
-                        import_name,
-                        os.path.join(dir_path, import_name),
-                        spec['provenance_url'],
-                        spec['provenance_description'])['attempt_id']
-                    import_one(dir_path, spec, run_id, attempt_id)
+                    attempt_id = None
+                    if dashboard:
+                        attempt_id = _init_attempt(
+                            dashboard,
+                            run_id,
+                            import_name,
+                            os.path.join(dir_path, import_name),
+                            spec['provenance_url'],
+                            spec['provenance_description'])['attempt_id']
+                    import_one(
+                        dir_path=dir_path,
+                        import_spec=spec,
+                        bucket_io=bucket_io,
+                        dashboard=dashboard,
+                        run_id=run_id,
+                        attempt_id=attempt_id)
+
     return 'success'
 
 
-def _init_run(commit_sha=None, repo_name=None, branch_name=None, pr_number=None):
-    dashboard = dashboard_api.DashboardAPI()
+def _init_run(
+        dashboard,
+        commit_sha=None, repo_name=None, branch_name=None, pr_number=None):
     run = {}
     if commit_sha:
         run['commit_sha'] = commit_sha
@@ -173,8 +188,9 @@ def _init_run(commit_sha=None, repo_name=None, branch_name=None, pr_number=None)
     return dashboard.init_run(run)
 
 
-def execute_imports_on_commit(commit_sha,
-                              repo_name=None, branch_name=None, pr_number=None):
+def execute_imports_on_commit(
+        commit_sha, bucket_io,
+        dashboard=None, repo_name=None, branch_name=None, pr_number=None):
     """Executes imports upon a GitHub commit that is a part of a pull request
     to the master branch of datacommonsorg/data.
 
@@ -191,32 +207,38 @@ def execute_imports_on_commit(commit_sha,
     Returns:
         A string describing the results of the imports.
     """
-    run_id = _init_run(commit_sha, repo_name, branch_name, pr_number)['run_id']
+    run_id = None
+    if dashboard:
+        run_id = _init_run(
+            dashboard,
+            commit_sha, repo_name, branch_name, pr_number)['run_id']
 
     try:
-        return _execute_imports_on_commit_helper(commit_sha, run_id)
-    except Exception as e:
-        logging.exception(e)
-        mark_system_run_failed(run_id)
-        return f'{e}'
+        return _execute_imports_on_commit_helper(
+            commit_sha=commit_sha, bucket_io=bucket_io,
+            dashboard=dashboard, run_id=run_id)
+    except Exception:
+        logging.exception('An exception happened')
+        message = traceback.format_exc()
+        if dashboard:
+            mark_system_run_failed(run_id, message, dashboard)
+        return message
 
 
-def mark_system_run_failed(run_id):
-    dashboard = dashboard_api.DashboardAPI()
-    dashboard.critical('Failed', run_id=run_id)
+def mark_system_run_failed(run_id, message, dashboard):
+    dashboard.critical(message, run_id=run_id)
     return dashboard.update_run({'status': 'failed'}, run_id=run_id)
 
 
-def mark_import_attempt_failed(attempt_id):
-    dashboard = dashboard_api.DashboardAPI()
-    dashboard.critical('Failed', attempt_id=attempt_id)
+def mark_import_attempt_failed(attempt_id, message, dashboard):
+    dashboard.critical(message, attempt_id=attempt_id)
     return dashboard.update_attempt({'status': 'failed'}, attempt_id=attempt_id)
 
 
-def _execute_imports_on_update_helper(absolute_import_name, run_id):
+def _execute_imports_on_update_helper(
+        absolute_import_name, run_id, bucket_io, dashboard):
     logging.info(absolute_import_name + ': BEGIN')
     github = github_api.GitHubRepoAPI()
-    dashboard = dashboard_api.DashboardAPI()
     with tempfile.TemporaryDirectory() as tmpdir:
         logging.info(absolute_import_name + ': downloading repo')
         repo_dirname = github.download_repo(tmpdir)
@@ -224,7 +246,8 @@ def _execute_imports_on_update_helper(absolute_import_name, run_id):
         cwd = os.path.join(tmpdir, repo_dirname)
         os.chdir(cwd)
 
-        dashboard.info(f'Downloaded repo: {repo_dirname}', run_id=run_id)
+        if dashboard:
+            dashboard.info(f'Downloaded repo: {repo_dirname}', run_id=run_id)
 
         dir_path, import_name = utils.split_relative_import_name(
             absolute_import_name)
@@ -233,13 +256,15 @@ def _execute_imports_on_update_helper(absolute_import_name, run_id):
         logging.info(absolute_import_name + ': loaded manifest ' + manifest_path)
         for spec in manifest['import_specifications']:
             if import_name == 'all' or import_name == spec['import_name']:
-                import_one(dir_path, spec, run_id, run_id)
+                import_one(
+                    dir_path=dir_path, import_spec=spec, bucket_io=bucket_io,
+                     run_id=run_id, dashboard=dashboard)
 
     logging.info(absolute_import_name + ': END')
     return 'success'
 
 
-def execute_imports_on_update(absolute_import_name):
+def execute_imports_on_update(absolute_import_name, bucket_io, dashboard=None):
     """Executes imports upon a scheduled update.
 
     Args:
@@ -252,18 +277,22 @@ def execute_imports_on_update(absolute_import_name):
     Returns:
         A string describing the results of the imports.
     """
-    run_id = absolute_import_name
+    run_id = None
     try:
-        return _execute_imports_on_update_helper(absolute_import_name, run_id)
-    except Exception as e:
-        logging.exception(e)
-        mark_system_run_failed(run_id)
-        return f'{e}'
+        if dashboard:
+            run_id = _init_run(dashboard)['run_id']
+        return _execute_imports_on_update_helper(
+            absolute_import_name, run_id, bucket_io, dashboard)
+    except Exception:
+        logging.exception('An exception happended')
+        message = traceback.format_exc()
+        if dashboard:
+            mark_system_run_failed(run_id, message, dashboard)
+        return message
 
 
-def _init_attempt(run_id, import_name, absolute_import_name,
+def _init_attempt(dashboard, run_id, import_name, absolute_import_name,
                   provenance_url, provenance_description):
-    dashboard = dashboard_api.DashboardAPI()
     return dashboard.init_attempt({
         'run_id': run_id,
         'import_name': import_name,
@@ -273,64 +302,72 @@ def _init_attempt(run_id, import_name, absolute_import_name,
     })
 
 
-def _import_one_helper(dir_path, import_spec, run_id, attempt_id):
+def _import_one_helper(
+        dir_path, import_spec, bucket_io,
+        dashboard=None, run_id=None, attempt_id=None):
+
     cwd = os.getcwd()
     os.chdir(dir_path)
-
-    dashboard = dashboard_api.DashboardAPI()
 
     urls = import_spec.get('data_download_url')
     if urls:
         for url in urls:
             utils.download_file(url, '.')
-            dashboard.info(f'Downloaded: {url}', attempt_id=attempt_id)
+            if dashboard:
+                dashboard.info(f'Downloaded: {url}', attempt_id=attempt_id)
 
     with tempfile.TemporaryDirectory() as tmpdir:
         interpreter_path, process = create_venv(configs.REQUIREMENTS_FILENAME,
                                                 tmpdir)
-        log = dashboard_api.construct_log(
-            'Installing dependencies',
-            process=process, run_id=run_id, attempt_id=attempt_id)
-        dashboard.log(log)
+        if dashboard:
+            log = dashboard_api.construct_log(
+                'Installing dependencies',
+                process=process, run_id=run_id, attempt_id=attempt_id)
+            dashboard.log(log)
         process.check_returncode()
 
         script_paths = import_spec.get('scripts')
         for path in script_paths:
             process = run_user_script(interpreter_path, path)
-            log = dashboard_api.construct_log(
-                f'Running {path}',
-                process=process, run_id=run_id, attempt_id=attempt_id)
-            dashboard.log(log)
+            if dashboard:
+                log = dashboard_api.construct_log(
+                    f'Running {path}',
+                    process=process, run_id=run_id, attempt_id=attempt_id)
+                dashboard.log(log)
             process.check_returncode()
 
     time = utils.pttime().replace(':', '_').replace('-', '_').replace('.', '_')
     path_prefix = f'{dir_path}/{import_spec["import_name"]}'
     import_inputs = import_spec.get('import_inputs', [])
-    bucket_io = gcs_io.GCSBucketIO(path_prefix)
+    bucket_io.prefix = path_prefix
+
     for i, import_input in enumerate(import_inputs):
         template_mcf = import_input.get('template_mcf')
         cleaned_csv = import_input.get('cleaned_csv')
         node_mcf = import_input.get('node_mcf')
         if template_mcf:
-            with open(template_mcf) as f:
-                dashboard.info(f'Generated template MCF: {f.readline()}',
-                               attempt_id=attempt_id)
+            if dashboard:
+                with open(template_mcf) as f:
+                    dashboard.info(f'Generated template MCF: {f.readline()}',
+                                   attempt_id=attempt_id)
             bucket_io.upload_file(
                 template_mcf,
                 f'{time}/{os.path.basename(template_mcf)}')
 
         if cleaned_csv:
-            with open(cleaned_csv) as f:
-                dashboard.info(f'Generated cleaned CSV: {f.readline()}',
-                               attempt_id=attempt_id)
+            if dashboard:
+                with open(cleaned_csv) as f:
+                    dashboard.info(f'Generated cleaned CSV: {f.readline()}',
+                                   attempt_id=attempt_id)
             bucket_io.upload_file(
                 cleaned_csv,
                 f'{time}/{os.path.basename(cleaned_csv)}')
 
         if node_mcf:
-            with open(node_mcf) as f:
-                dashboard.info(f'Generated node MCF: {f.readline()}',
-                               attempt_id=attempt_id)
+            if dashboard:
+                with open(node_mcf) as f:
+                    dashboard.info(f'Generated node MCF: {f.readline()}',
+                                   attempt_id=attempt_id)
             bucket_io.upload_file(
                 node_mcf,
                 f'{time}/{os.path.basename(node_mcf)}')
@@ -338,7 +375,9 @@ def _import_one_helper(dir_path, import_spec, run_id, attempt_id):
     os.chdir(cwd)
 
 
-def import_one(dir_path, import_spec, run_id, attempt_id):
+def import_one(
+        dir_path, import_spec, bucket_io,
+        dashboard=None, run_id=None, attempt_id=None):
     """Executes an import.
 
     Args:
@@ -348,7 +387,13 @@ def import_one(dir_path, import_spec, run_id, attempt_id):
         attempt_id: Attempt ID.
     """
     try:
-        return _import_one_helper(dir_path, import_spec, run_id, attempt_id)
+        return _import_one_helper(
+            dir_path=dir_path, import_spec=import_spec, bucket_io=bucket_io,
+            dashboard=dashboard, run_id=run_id, attempt_id=attempt_id)
     except Exception as e:
-        mark_import_attempt_failed(attempt_id)
+        if dashboard:
+            mark_import_attempt_failed(
+                attempt_id,
+                traceback.format_exc(),
+                dashboard)
         raise e
