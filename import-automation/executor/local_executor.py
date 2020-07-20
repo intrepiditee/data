@@ -14,6 +14,20 @@
 
 """
 Local import executor. Run '. run_local_executor.sh --help' for usage.
+
+The local executor downloads the master branch of a repository and produces
+the data files of an import specified by its absolute import name of the form
+<path to the directory containing the manifest>:<import name>.
+
+username and access_token are used for authentication with GitHub to access
+private repositories and get higher rate limits. They need to be both absent or
+provided. See
+https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
+for how to create access tokens.
+
+owner_username and repo_name uniquely identify a repository. In
+'https://github.com/datacommonsorg/data', 'datacommonsorg' is the owner_username
+and 'data' is the repo_name.
 """
 
 from absl import flags
