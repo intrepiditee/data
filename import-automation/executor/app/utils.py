@@ -34,7 +34,13 @@ def list_to_str(a_list, sep=', '):
 
 
 def _get_filename(response):
-    return re.findall('filename=(.+)', response.headers['Content-Disposition'])[0]
+    header = response.headers.get('Content-Disposition')
+    if not header:
+        return os.path.basename(response.url)
+    name_list = re.findall(r'filename=(.+)', header)
+    if not name_list or not name_list[0]:
+        raise ValueError('filename not found in Content-Disposition header')
+    return name_list[0]
 
 
 def download_file(url, dest_dir):
