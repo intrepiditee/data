@@ -330,8 +330,10 @@ class ImportExecutor:
                         f'Downloaded: {url}', attempt_id=attempt_id)
 
         with tempfile.TemporaryDirectory() as tmpdir:
+            requirements_path = os.path.join(
+                absolute_import_dir, self.config.requirements_filename)
             interpreter_path, process = _create_venv(
-                self.config.requirements_filename, tmpdir,
+                requirements_path, tmpdir,
                 timeout=self.config.venv_create_timeout)
 
             _log_process(

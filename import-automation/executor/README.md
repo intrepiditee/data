@@ -46,6 +46,7 @@ Run `./run_local_executor --help` for usage.
 ## Running Tests
 
 ```shell script
+export GITHUB_AUTH_ACCESS_TOKEN=<your access token>
 ./run_test.sh
 ```
 
