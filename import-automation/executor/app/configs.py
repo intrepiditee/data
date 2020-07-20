@@ -82,12 +82,12 @@ class ExecutorConfig:
         return client.get(key)[entity_id]
 
 
-def setup_logging(config):
+def _setup_logging():
     client = google.cloud.logging.Client()
     client.get_default_handler()
     client.setup_logging()
 
 
 if _production():
-    setup_logging()
+    _setup_logging()
 
