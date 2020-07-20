@@ -16,7 +16,7 @@ import os
 import typing
 import dataclasses
 
-import google.cloud
+from google.cloud import logging
 from google.cloud import datastore
 
 
@@ -83,7 +83,7 @@ class ExecutorConfig:
 
 
 def _setup_logging():
-    client = google.cloud.logging.Client()
+    client = logging.Client()
     client.get_default_handler()
     client.setup_logging()
 
