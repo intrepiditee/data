@@ -17,6 +17,7 @@ import dataclasses
 import flask
 
 from app import configs
+from app.executor import validation
 from app.executor import import_executor
 from app.service import file_uploader
 from app.service import dashboard_api
@@ -38,6 +39,8 @@ def execute_imports():
     Logs to the import progress dashboard.
     """
     task_info = flask.request.get_json(force=True)
+    if 'COMMIT_SHA' not in task_info:
+        return 'COMMIT_SHA not found'
     commit_sha = task_info['COMMIT_SHA']
     repo_name = task_info.get('REPO_NAME')
     branch_name = task_info.get('BRANCH_NAME')
@@ -71,6 +74,8 @@ def scheduled_updates():
     Currently does not log to the import progress dashboard but will later.
     """
     task_info = flask.request.get_json(force=True)
+    if 'absolute_import_name' not in task_info:
+        return 'absolute_import_name not found'
     task_configs = task_info.get(
         'configs',
         {

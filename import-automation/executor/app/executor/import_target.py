@@ -12,6 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Import targets specified in the commit message are of the form:
+1) <path to directory containing the manifest>:<import name>
+    The import with the import name in the directory is executed.
+2) <import name>
+    The import with the import name in the only directory touched by the
+    import is executed.
+3) <path to directory containing the manifest>:all
+    All imports in the directory are executed.
+4) all
+    All imports in directories touched by the commit are executed.
+"""
+
 import re
 import typing
 

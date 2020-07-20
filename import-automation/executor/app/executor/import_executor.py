@@ -15,18 +15,8 @@
 """
 Import executor that downloads GitHub repositories and executes data imports
 based on manifests.
-
-Import targets specified in the commit message are of the form:
-1) <path to directory containing the manifest>:<import name>
-    The import with the import name in the directory is executed.
-2) <import name>
-    The import with the import name in the only directory touched by the
-    import is executed.
-3) <path to directory containing the manifest>:all
-    All imports in the directory are executed.
-4) all
-    All imports in directories touched by the commit are executed.
 """
+
 import json
 import os
 import re
@@ -48,6 +38,19 @@ from app.utils import list_to_str
 
 _SYSTEM_RUN_INIT_FAILED_MESSAGE = ('Failed to initialize the system run '
                                    'with the import progress dashboard')
+
+
+def parse_manifest(path: str) -> dict:
+    """Parses the import manifest.
+
+    Args:
+        path: Path to the import manifest file as a string.
+
+    Returns:
+        The parsed manifest as a dict.
+    """
+    with open(path) as file:
+        return json.load(file)
 
 
 @dataclasses.dataclass
@@ -178,7 +181,7 @@ class ImportExecutor:
             absolute_import_dir = os.path.join(tmpdir, repo_dirname, import_dir)
             manifest_path = os.path.join(absolute_import_dir,
                                          self.config.manifest_filename)
-            manifest = _parse_manifest(manifest_path)
+            manifest = parse_manifest(manifest_path)
             logging.info('%s: loaded manifest %s',
                          absolute_import_name,
                          manifest_path)
@@ -219,28 +222,37 @@ class ImportExecutor:
             message = ('No import target specified in commit message '
                        '({commit_message})')
             return ExecutionResult('pass', [], message)
-        validation.import_targets_valid(targets, manifest_dirs)
-        # Import targets specified in the commit message can be absolute, e.g.,
-        # 'scripts/us_fed/treasury:constant_maturity'. Add the directory
-        # components, e.g., 'scripts/us_fed/treasury', to manifest_dirs.
-        for target in import_target.get_absolute_import_names(targets):
-            import_dir, _ = import_target.split_absolute_import_name(target)
-            manifest_dirs.add(import_dir)
-        # At this point, manifest_dirs contains all the directories that will
-        # be looked at to look for imports.
 
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_dir = self.github.download_repo(tmpdir, commit_sha)
             if self.dashboard:
                 self.dashboard.info(
                     f'Downloaded repo: {repo_dir}', run_id=run_id)
+            repo_dir = os.path.join(tmpdir, repo_dir)
+
+            validation.import_targets_valid(targets,
+                                            list(manifest_dirs),
+                                            repo_dir,
+                                            self.config.manifest_filename)
+
+            # Import targets specified in the commit message can be absolute,
+            # e.g., 'scripts/us_fed/treasury:constant_maturity'.
+            # Add the directory components, e.g., 'scripts/us_fed/treasury',
+            # to manifest_dirs.
+            for target in import_target.get_absolute_import_names(targets):
+                import_dir, _ = import_target.split_absolute_import_name(target)
+                manifest_dirs.add(import_dir)
+            # At this point, manifest_dirs contains all the directories that
+            # will be looked at to look for imports.
 
             executed_imports = []
             for import_dir in manifest_dirs:
-                absolute_import_dir = os.path.join(tmpdir, repo_dir, import_dir)
+                absolute_import_dir = os.path.join(repo_dir, import_dir)
                 manifest_path = os.path.join(absolute_import_dir,
                                              self.config.manifest_filename)
-                manifest = _parse_manifest(manifest_path)
+                manifest = parse_manifest(manifest_path)
+                validation.manifest_valid(manifest, repo_dir, import_dir)
+
                 for spec in manifest['import_specifications']:
                     import_name = spec['import_name']
                     if not import_target.import_targetted_by_commit(
@@ -295,13 +307,13 @@ class ImportExecutor:
                 import_spec=import_spec,
                 run_id=run_id,
                 attempt_id=attempt_id)
-        except Exception as e:
+        except Exception as exc:
             if self.dashboard:
                 _mark_import_attempt_failed(
                     attempt_id=attempt_id,
                     message=traceback.format_exc(),
                     dashboard=self.dashboard)
-            raise e
+            raise exc
 
     def _import_one_helper(self,
                            relative_import_dir: str,
@@ -358,15 +370,16 @@ class ImportExecutor:
 
         version = _clean_time(utils.pttime())
         for import_input in import_inputs:
-            input_types = ['template_mcf', 'cleaned_csv', 'node_mcf']
-            for input_type in input_types:
+            for input_type in self.config.import_input_types:
                 path = import_input.get(input_type)
                 if path:
                     self._upload_file_helper(
                         src=os.path.join(import_dir, path),
                         dest=f'{output_dir}/{version}/{os.path.basename(path)}',
                         attempt_id=attempt_id)
-        self.uploader.upload_string(version, f'{output_dir}/latest_version.txt')
+        self.uploader.upload_string(
+            version,
+            os.path.join(output_dir, self.config.storage_version_filename))
 
     def _upload_file_helper(self,
                             src: str,
@@ -401,11 +414,11 @@ def _run_and_handle_exception(
     """
     try:
         return exec_func(*args)
-    except ExecutionError as e:
+    except ExecutionError as exc:
         logging.exception('ExecutionError was thrown')
         if dashboard:
-            _mark_system_run_failed(run_id, str(e.result), dashboard)
-        return e.result
+            _mark_system_run_failed(run_id, str(exc.result), dashboard)
+        return exc.result
     except Exception:
         logging.exception('An unexpected exception was thrown')
         message = traceback.format_exc()
@@ -552,19 +565,6 @@ def _mark_import_attempt_failed(
 def _create_system_run_init_failed_result(trace):
     return ExecutionResult(
         'failed', [], f'{_SYSTEM_RUN_INIT_FAILED_MESSAGE}\n{trace}')
-
-
-def _parse_manifest(path: str) -> dict:
-    """Parses the import manifest.
-
-    Args:
-        path: Path to the import manifest file as a string.
-
-    Returns:
-        The parsed manifest as a dict.
-    """
-    with open(path) as file:
-        return json.load(file)
 
 
 def _clean_time(time: str) -> str:

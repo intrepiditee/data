@@ -34,6 +34,7 @@ def _testing():
 
 @dataclasses.dataclass
 class ExecutorConfig:
+    # TODO(intrepiditee): Add descriptions
     gcp_project_id: str = 'google.com:datcom-data'
     datastore_configs_namespace: str = 'configs'
     datastore_configs_kind: str = 'config'
@@ -45,6 +46,13 @@ class ExecutorConfig:
     manifest_filename: str = 'manifest.json'
     requirements_filename: str = 'requirements.txt'
     storage_bucket_name: str = 'import-inputs'
+    storage_version_filename: str = 'latest_version.txt'
+    import_input_types: typing.List[str] = (
+        'template_mcf',
+        'cleaned_csv',
+        'node_mcf'
+    )
+
     user_script_timeout: float = 600
     venv_create_timeout: float = 600
 
