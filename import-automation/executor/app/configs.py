@@ -45,12 +45,12 @@ class ExecutorConfig:
     manifest_filename: str = 'manifest.json'
     requirements_filename: str = 'requirements.txt'
     storage_bucket_name: str = 'import-inputs'
-    user_script_timeout: int = 600
-    venv_create_timeout: int = 600
+    user_script_timeout: float = 600
+    venv_create_timeout: float = 600
 
     # TODO(intrepiditee): Implement these two
-    file_download_timeout: int = 600
-    repo_download_timeout: int = 600
+    file_download_timeout: float = 600
+    repo_download_timeout: float = 600
 
     def __post_init__(self):
         access_token = 'GITHUB_AUTH_ACCESS_TOKEN'

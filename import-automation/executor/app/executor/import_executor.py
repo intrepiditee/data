@@ -16,7 +16,7 @@
 Import executor that downloads GitHub repositories and executes data imports
 based on manifests.
 
-Import targets specified in the commit message of the form:
+Import targets specified in the commit message are of the form:
 1) <path to directory containing the manifest>:<import name>
     The import with the import name in the directory is executed.
 2) <import name>
@@ -223,9 +223,7 @@ class ImportExecutor:
         # Import targets specified in the commit message can be absolute, e.g.,
         # 'scripts/us_fed/treasury:constant_maturity'. Add the directory
         # components, e.g., 'scripts/us_fed/treasury', to manifest_dirs.
-        absolute_targets = [target for target in targets
-                            if import_target.absolute_import_name(target)]
-        for target in absolute_targets:
+        for target in import_target.get_absolute_import_names(targets):
             import_dir, _ = import_target.split_absolute_import_name(target)
             manifest_dirs.add(import_dir)
         # At this point, manifest_dirs contains all the directories that will
@@ -383,7 +381,8 @@ class ImportExecutor:
 
 
 def _run_and_handle_exception(
-        run_id: str, dashboard: dashboard_api.DashboardAPI,
+        run_id: typing.Optional[str],
+        dashboard: typing.Optional[dashboard_api.DashboardAPI],
         exec_func: typing.Callable, *args) -> ExecutionResult:
     """Runs a method of ImportExecutor that executes imports and handles
     its exceptions.
@@ -417,13 +416,13 @@ def _run_and_handle_exception(
 
 def _run_with_timeout(
         args: typing.List[str],
-        timeout: int,
+        timeout: float,
         cwd: str = None) -> subprocess.CompletedProcess:
     """Runs a command in a subprocess.
 
     Args:
         args: Command to run as a list. Each element is a string.
-        timeout: Maximum time the command can run for in seconds as an int.
+        timeout: Maximum time the command can run for in seconds as a float.
         cwd: Current working directory of the process as a string.
 
     Returns:
@@ -436,8 +435,13 @@ def _run_with_timeout(
 def _create_venv(
         requirements_path: str,
         venv_dir: str,
-        timeout: int) -> typing.Tuple[str, subprocess.CompletedProcess]:
+        timeout: float) -> typing.Tuple[str, subprocess.CompletedProcess]:
     """Creates a Python virtual environment.
+
+    The virtual environment is created with --system-site-packages set,
+    which allows it to access modules installed on the host. This provides
+    the opportunity to use the requirements.txt file for this project as
+    a central requirement file for all user scripts.
 
     Args:
         requirements_path: Path to a pip requirement file listing the
@@ -445,7 +449,7 @@ def _create_venv(
         venv_dir: Path to the directory to create the virtual environment in
             as a string.
         timeout: Maximum time the creation script can run for in seconds
-            as an int.
+            as a float.
 
     Returns:
         A tuple consisting of the path to the created interpreter as a string
@@ -467,7 +471,7 @@ def _create_venv(
 def _run_user_script(
         interpreter_path: str,
         script_path: str,
-        timeout: int,
+        timeout: float,
         args: list = None,
         cwd: str = None) -> subprocess.CompletedProcess:
     """Runs a user Python script.
@@ -477,7 +481,7 @@ def _run_user_script(
         interpreter_path: Path to the Python interpreter to run the
             user script as a string.
         timeout: Maximum time the user script can run for in seconds
-            as an int.
+            as a float.
         args: A list of arguments each as a string to pass to the
             user script on the command line.
         cwd: Current working directory of the process as a string.
@@ -501,7 +505,6 @@ def _init_run_helper(
         repo_name: str = None,
         branch_name: str = None,
         pr_number: str = None) -> dict:
-    """"""
     run = {}
     if commit_sha:
         run['commit_sha'] = commit_sha
