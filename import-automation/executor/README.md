@@ -39,7 +39,7 @@ You could also use Cloud Scheduler to POST to the endpoints directly. For exampl
 3. `Body` = `{"absolute_import_name": "scripts/us_fed/treausury_contant_maturity_rates:us_treausury_contant_maturity_rates"}`
 
 
-## Testing locally
+## Running tests
 
 ```
 ./run_test.sh
@@ -47,3 +47,7 @@ You could also use Cloud Scheduler to POST to the endpoints directly. For exampl
 
 See [test/test_integration](test/test_integration.py).  First lines of the
 generated files would be printed.
+
+## Local Executor
+
+

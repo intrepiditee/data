@@ -13,6 +13,9 @@
 # limitations under the License.
 
 python3 -m venv .env
-source .env/bin/activate
-pip3 install -r requirements.txt
+. .env/bin/activate
+pip3 install --disable-pip-version-check -q -r requirements.txt
+
 python3 -m unittest -v
+
+deactivate
