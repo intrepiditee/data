@@ -61,6 +61,8 @@ def compare_lines(expected_path, to_test_path, num_lines, reverse=False):
             else:
                 expected_lines = expected.readlines()[:num_lines]
                 lines_to_test = to_test.readlines()[:num_lines]
+            if len(lines_to_test) != len(expected_lines):
+                return False
             for i in range(min(len(lines_to_test), num_lines)):
                 expected_line = expected_lines[i]
                 line_to_test = lines_to_test[i]

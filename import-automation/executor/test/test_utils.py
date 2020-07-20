@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import subprocess
 import unittest
 from unittest import mock
 import datetime
@@ -20,6 +19,7 @@ import tempfile
 import hashlib
 
 import app.utils
+import test.utils
 
 
 class AppUtilsTest(unittest.TestCase):
@@ -67,4 +67,38 @@ class AppUtilsTest(unittest.TestCase):
 
 class TestUtilsTest(unittest.TestCase):
     """Tests for test/utils.py."""
-    pass
+
+    def test_compare_lines(self):
+        lines = 100
+        with tempfile.NamedTemporaryFile(mode='w+') as expected:
+            for i in range(lines):
+                expected.write(f'{i}\n')
+            expected.flush()
+            with tempfile.NamedTemporaryFile(mode='w+') as to_test:
+                for i in range(lines):
+                    to_test.write(f'{i}\n')
+                to_test.flush()
+                self.assertTrue(test.utils.compare_lines(
+                    expected.name, to_test.name, lines))
+                self.assertTrue(test.utils.compare_lines(
+                    expected.name, to_test.name, lines, True))
+
+                self.assertTrue(test.utils.compare_lines(
+                    expected.name, to_test.name, 999999))
+                self.assertTrue(test.utils.compare_lines(
+                    expected.name, to_test.name, 999999, True))
+
+                to_test.write('one-more-line-at-end\n')
+                to_test.flush()
+                self.assertTrue(test.utils.compare_lines(
+                    expected.name, to_test.name, lines))
+                self.assertFalse(test.utils.compare_lines(
+                    expected.name, to_test.name, lines, True))
+
+                to_test.seek(0)
+                to_test.write('one-more-line-at-start\n')
+                to_test.flush()
+                self.assertFalse(test.utils.compare_lines(
+                    expected.name, to_test.name, lines))
+                self.assertFalse(test.utils.compare_lines(
+                    expected.name, to_test.name, lines, True))
