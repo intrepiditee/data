@@ -46,6 +46,8 @@ class DashboardAPITest(unittest.TestCase):
         }
         post.return_value = utils.ResponseMock(200, expected)
         self.assertEqual(expected, self.dashboard._log_helper(**args))
+        post.assert_called_once_with(
+            'https://datcom-data.uc.r.appspot.com/logs', json=args)
 
     @mock.patch('app.service.iap_request.IAPRequest.post')
     def test_log_helper_time(self, post):

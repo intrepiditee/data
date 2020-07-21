@@ -137,6 +137,10 @@ class DashboardAPI:
             'level': level,
             'time_logged': time_logged
         }
+        if run_id:
+            log['run_id'] = run_id
+        if attempt_id:
+            log['attempt_id'] = attempt_id
         response = self.iap.post(_DASHBOARD_LOG_LIST, json=log)
         response.raise_for_status()
         return response.json()
