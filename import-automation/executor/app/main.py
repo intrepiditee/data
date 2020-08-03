@@ -71,8 +71,8 @@ def execute_imports():
             auth_access_token=config.github_auth_access_token),
         config=config,
         dashboard=dashboard_api.DashboardAPI(config.dashboard_oauth_client_id),
-        notifier=email_notifier.EmailNotifier(config.gmail_account,
-                                              config.gmail_password))
+        notifier=email_notifier.EmailNotifier(config.email_account,
+                                              config.email_token))
     result = executor.execute_imports_on_commit(commit_sha=commit_sha,
                                                 repo_name=repo_name,
                                                 branch_name=branch_name,
