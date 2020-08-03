@@ -41,7 +41,7 @@ class EmailNotifier:
         Args:
             subject: Email subject as a string.
             body: Email body as a string.
-            receiver_address: Receiver email address as a string.
+            receiver_address: List of receiver email addresses each as a string.
 
         Raises:
             Same exceptions as smtplib.SMTP_SSL.__init__,

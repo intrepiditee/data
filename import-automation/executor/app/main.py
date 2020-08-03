@@ -133,6 +133,14 @@ def start():
     return ''
 
 
+@FLASK_APP.route('/mail', methods=['POST'])
+def send_mail():
+    info = flask.request.get_json(force=True)
+    sender = email_notifier.EmailNotifier(info['gmail_account'], info['gmail_password'])
+    sender.send('Subject', 'Body', ['shijunjie@google.com'])
+    return 'success'
+
+
 def main():
     """Runs the app locally."""
     FLASK_APP.run(host='127.0.0.1', port=8080, debug=True)
