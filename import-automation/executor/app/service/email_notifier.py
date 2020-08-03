@@ -26,7 +26,8 @@ class EmailNotifier:
 
     Attributes:
         account: Sender email account as a string.
-        password: The corresponding password as a string.
+        password: The corresponding password, app password, or access token
+            as a string.
     """
 
     def __init__(self, account: str, password: str):
