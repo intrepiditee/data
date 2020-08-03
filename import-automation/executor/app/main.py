@@ -62,7 +62,7 @@ def execute_imports():
     config = configs.ExecutorConfig(**task_configs)
     executor = import_executor.ImportExecutor(
         uploader=file_uploader.GCSFileUploader(
-            project_id=config.gcp_project_id,
+            project_id=config.gcs_project_id,
             bucket_name=config.storage_bucket_name),
         github=github_api.GitHubRepoAPI(
             repo_owner_username=config.github_repo_owner_username,
@@ -93,7 +93,7 @@ def scheduled_updates():
     config = configs.ExecutorConfig(**task_configs)
     executor = import_executor.ImportExecutor(
         uploader=file_uploader.GCSFileUploader(
-            project_id=config.gcp_project_id,
+            project_id=config.gcs_project_id,
             bucket_name=config.storage_bucket_name),
         github=github_api.GitHubRepoAPI(
             repo_owner_username=config.github_repo_owner_username,
