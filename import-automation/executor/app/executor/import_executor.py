@@ -56,6 +56,7 @@ class ExecutionError(Exception):
         execution_result: ExecutionResult object describing the result
             of the execution.
     """
+
     def __init__(self, execution_result: ExecutionResult):
         super().__init__()
         self.result = execution_result
@@ -76,6 +77,7 @@ class ImportExecutor:
             communicate with the dashboard.
         notifier: EmailNotifier object for sending notificaiton emails.
     """
+
     def __init__(self,
                  uploader: file_uploader.FileUploader,
                  github: github_api.GitHubRepoAPI,
@@ -171,8 +173,8 @@ class ImportExecutor:
             logging.info('%s: downloading repo', absolute_import_name)
             repo_dir = self.github.download_repo(
                 tmpdir, timeout=self.config.repo_download_timeout)
-            logging.info(
-                '%s: downloaded repo %s', absolute_import_name, repo_dir)
+            logging.info('%s: downloaded repo %s', absolute_import_name,
+                         repo_dir)
             if self.dashboard:
                 self.dashboard.info(f'Downloaded repo: {repo_dir}',
                                     run_id=run_id)
@@ -271,8 +273,10 @@ class ImportExecutor:
 
             if self.dashboard:
                 self.dashboard.update_run(
-                    {'status': 'succeeded', 'time_completed': utils.utctime()},
-                    run_id)
+                    {
+                        'status': 'succeeded',
+                        'time_completed': utils.utctime()
+                    }, run_id)
 
             return ExecutionResult('succeeded', executed_imports, 'No issues')
 
@@ -318,7 +322,7 @@ class ImportExecutor:
                     subject=(f'Import Automation - {absolute_import_name} '
                              f'- Succeeded'),
                     body='See dashboard for logs',
-                    receiver_address=curator_emails)
+                    receiver_addresses=curator_emails)
 
         except Exception as exc:
             if self.dashboard:
@@ -327,11 +331,10 @@ class ImportExecutor:
                                             dashboard=self.dashboard)
             if self.notifier:
                 self.notifier.send(
-                    subject=(
-                        f'Import Automation - {absolute_import_name} '
-                        f'- Failed'),
+                    subject=(f'Import Automation - {absolute_import_name} '
+                             f'- Failed'),
                     body='See dashboard for logs',
-                    receiver_address=curator_emails)
+                    receiver_addresses=curator_emails)
             raise exc
 
     def _import_one_helper(self,
@@ -394,8 +397,10 @@ class ImportExecutor:
 
         if self.dashboard:
             self.dashboard.update_attempt(
-                {'status': 'succeeded', 'time_completed': utils.utctime()},
-                attempt_id)
+                {
+                    'status': 'succeeded',
+                    'time_completed': utils.utctime()
+                }, attempt_id)
 
     def _upload_import_inputs(self,
                               import_dir: str,
@@ -628,15 +633,20 @@ def _mark_system_run_failed(run_id: str, message: str,
                             dashboard: dashboard_api.DashboardAPI) -> dict:
     dashboard.critical(message, run_id=run_id)
     return dashboard.update_run(
-        {'status': 'failed', 'time_completed': utils.utctime()}, run_id=run_id)
+        {
+            'status': 'failed',
+            'time_completed': utils.utctime()
+        }, run_id=run_id)
 
 
 def _mark_import_attempt_failed(attempt_id: str, message: str,
                                 dashboard: dashboard_api.DashboardAPI) -> dict:
     dashboard.critical(message, attempt_id=attempt_id)
     return dashboard.update_attempt(
-        {'status': 'failed', 'time_completed': utils.utctime()},
-        attempt_id)
+        {
+            'status': 'failed',
+            'time_completed': utils.utctime()
+        }, attempt_id)
 
 
 def _create_system_run_init_failed_result(trace):

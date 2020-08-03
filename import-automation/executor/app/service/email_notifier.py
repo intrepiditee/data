@@ -28,20 +28,20 @@ class EmailNotifier:
         account: Sender email account as a string.
         password: The corresponding password as a string.
     """
+
     def __init__(self, account: str, password: str):
         self.account = account
         self.password = password
 
-    def send(self,
-             subject: str,
-             body: str,
-             receiver_address: List[str]) -> None:
+    def send(self, subject: str, body: str,
+             receiver_addresses: List[str]) -> None:
         """Sends an email.
 
         Args:
             subject: Email subject as a string.
             body: Email body as a string.
-            receiver_address: List of receiver email addresses each as a string.
+            receiver_addresses: List of receiver email addresses
+                each as a string.
 
         Raises:
             Same exceptions as smtplib.SMTP_SSL.__init__,
@@ -52,8 +52,8 @@ class EmailNotifier:
             server.ehlo()
             server.login(self.account, self.password)
             email = (f'From: {self.account}\n'
-                     f'To: {utils.list_to_str(receiver_address)}\n'
+                     f'To: {utils.list_to_str(receiver_addresses)}\n'
                      f'Subject: {subject}\n'
                      '\n'
                      f'{body}\n')
-            server.sendmail(self.account, receiver_address, email)
+            server.sendmail(self.account, receiver_addresses, email)
