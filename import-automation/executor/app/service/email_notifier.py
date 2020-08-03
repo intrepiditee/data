@@ -1,19 +1,59 @@
-from google.appengine.api import mail
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""
+Class for sending email notifications about import progress.
+"""
 
+import smtplib
+from typing import List
+
+from app import utils
 
 
 class EmailNotifier:
     """Class for sending email notifications about import progress.
 
     Attributes:
-        sender: Sender address as a string.
+        account: Sender email account as a string.
+        password: The corresponding password as a string.
     """
-    def __init__(self, sender: str):
-        self.sender = sender
+    def __init__(self, account: str, password: str):
+        self.account = account
+        self.password = password
 
-    def send(self, subject: str, body: str, receiver_name: str, receiver_address:):
-        mail.send_mail(sender=self.sender,
-                       to=f'{receiver_name} <{receiver_address}>',
-                       subject=subject,
-                       body=body)
+    def send(self,
+             subject: str,
+             body: str,
+             receiver_address: List[str]) -> None:
+        """Sends an email.
 
+        Args:
+            subject: Email subject as a string.
+            body: Email body as a string.
+            receiver_address: Receiver email address as a string.
+
+        Raises:
+            Same exceptions as smtplib.SMTP_SSL.__init__,
+            smtplib.SMTP_SSL.ehlo, smtplib.SMTP_SSL.login,
+            smtplib.SMTP_SSL.sendmail.
+        """
+        with smtplib.SMTP_SSL('smtp.gmail.com') as server:
+            server.ehlo()
+            server.login(self.account, self.password)
+            email = (f'From: {self.account}\n'
+                     f'To: {utils.list_to_str(receiver_address)}\n'
+                     f'Subject: {subject}\n'
+                     '\n'
+                     f'{body}\n')
+            server.sendmail(self.account, receiver_address, email)

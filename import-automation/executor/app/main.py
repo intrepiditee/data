@@ -70,7 +70,9 @@ def execute_imports():
             auth_username=config.github_auth_username,
             auth_access_token=config.github_auth_access_token),
         config=config,
-        dashboard=dashboard_api.DashboardAPI(config.dashboard_oauth_client_id))
+        dashboard=dashboard_api.DashboardAPI(config.dashboard_oauth_client_id),
+        notifier=email_notifier.EmailNotifier(config.gmail_account,
+                                              config.gmail_password))
     result = executor.execute_imports_on_commit(commit_sha=commit_sha,
                                                 repo_name=repo_name,
                                                 branch_name=branch_name,
@@ -129,13 +131,6 @@ def schedule_crons():
 def start():
     """Handles start up calls from App Engine."""
     return ''
-
-
-@FLASK_APP.route('/mail')
-def send_mail():
-    sender = email_notifier.EmailNotifier('shijunjie@google.com')
-    sender.send('Subject', 'Body', 'shijunjie@google.com', 'shijunjie@google.com')
-    return 'success'
 
 
 def main():

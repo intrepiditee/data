@@ -90,6 +90,10 @@ class ExecutorConfig:
     file_download_timeout: float = 600
     # Maximum time downloading the repo can take in seconds.
     repo_download_timeout: float = 600
+    # Gmail account used to send notification emails about import progress
+    gmail_account: str = ''
+    # The corresponding password.
+    gmail_password: str = ''
 
 
 def _setup_logging():
