@@ -33,6 +33,7 @@ from app.executor import import_executor
 from app.service import file_uploader
 from app.service import dashboard_api
 from app.service import github_api
+from app.service import email_notifier
 
 
 def create_app():
@@ -128,6 +129,13 @@ def schedule_crons():
 def start():
     """Handles start up calls from App Engine."""
     return ''
+
+
+@FLASK_APP.route('/mail')
+def send_mail():
+    sender = email_notifier.EmailNotifier('shijunjie@google.com')
+    sender.send('Subject', 'Body', 'shijunjie@google.com', 'shijunjie@google.com')
+    return 'success'
 
 
 def main():
