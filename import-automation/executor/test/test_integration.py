@@ -50,6 +50,7 @@ class GCSFileUploaderMock:
         assert string == '2020_07_15T12_07_17_365264_07_00'
 
 
+@mock.patch('app.service.email_notifier.EmailNotifier', mock.MagicMock())
 @mock.patch('app.service.dashboard_api.DashboardAPI', mock.MagicMock())
 @mock.patch('app.service.file_uploader.GCSFileUploader', GCSFileUploaderMock)
 @mock.patch('app.utils.pacific_time',
@@ -114,6 +115,7 @@ class StandaloneUpdateTest(unittest.TestCase):
         self.assertEqual(expected_result, response.json)
 
 
+@mock.patch('app.service.email_notifier.EmailNotifier', mock.MagicMock())
 @mock.patch('app.service.dashboard_api.DashboardAPI', mock.MagicMock)
 @mock.patch('app.utils.pacific_time',
             lambda: '2020-07-15T12:07:17.365264-07:00')
@@ -158,6 +160,7 @@ class CommitTest(unittest.TestCase):
 
 
 @mock.patch('app.utils.utctime', lambda: '2020-07-24T16:27:22.609304+00:00')
+@mock.patch('app.service.email_notifier.EmailNotifier', mock.MagicMock())
 @mock.patch('app.service.dashboard_api.DashboardAPI', mock.MagicMock())
 @mock.patch('google.cloud.scheduler.CloudSchedulerClient',
             utils.SchedulerClientMock)
