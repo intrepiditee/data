@@ -39,20 +39,34 @@ class ExecutorConfig:
     # project needs to enable Cloud Storage and gives the service account the
     # executor uses sufficient permissions to read and write the bucket below.
     gcs_project_id: str = 'datcom-204919'
-    # Name of the Cloud Storage bucket to store the generated data files.
-    storage_bucket_name: str = 'datcom-dev-imports'
+    # Name of the Cloud Storage bucket to store the generated data files
+    # for importing to prod.
+    storage_prod_bucket_name: str = 'datcom-prod-imports'
+    # Name of the Cloud Storage bucket that the Data Commons importer
+    # outputs to.
+    storage_importer_bucket_name: str = 'resolved_mcf'
+    # Data Commons importer output prefix in the
+    # storage_importer_bucket_name bucket.
+    storage_importer_output_prefix: str = 'external_tables'
+    # Name of the Cloud Storage bucket to store the generated data files
+    # for importing to dev.
+    storage_dev_bucket_name: str = 'unresolved_mcf'
+    # Executor output prefix in the storage_dev_bucket_name bucket.
+    storage_executor_output_prefix: str = 'datcom-dev-imports'
     # Name of the file that specifies the most recently generated data files
     # of an import. These files are stored in the bucket at a level higher
-    # than the data files. For example,
-    # datcom-dev-imports
-    # -- scripts
-    # ---- us_fed
-    # ------ treasury
-    # -------- latest_version.txt
-    # -------- 2020_07_15T12_07_17_365264_07_00
-    # ---------- data.csv
-    # -------- 2020_07_14T12_07_12_552234_07_00
-    # ---------- data.csv
+    # than the data files. For example, for importing scripts/us_fed:treausry
+    # to dev, the bucket structure is
+    # unresolved_mcf
+    # -- datcom-dev-imports
+    # ---- scripts
+    # ------ us_fed
+    # -------- treasury
+    # ---------- latest_version.txt
+    # ---------- 2020_07_15T12_07_17_365264_07_00
+    # ------------ data.csv
+    # ---------- 2020_07_14T12_07_12_552234_07_00
+    # ------------ data.csv
     # The content of latest_version.txt would be a single line of
     # '2020_07_15T12_07_17_365264_07_00'.
     storage_version_filename: str = 'latest_version.txt'
@@ -98,6 +112,12 @@ class ExecutorConfig:
     email_account: str = ''
     # The corresponding password, app password, or access token.
     email_token: str = ''
+    # Maximum time a blocking call to the importer to
+    # perform an import can take in seconds.
+    importer_import_timeout: float = 10 * 60
+    # Maximum time a blocking call to the importer to
+    # delete an import can take in seconds.
+    importer_delete_timeout: float = 10 * 60
 
 
 def _setup_logging():

@@ -34,6 +34,7 @@ from app.service import file_uploader
 from app.service import dashboard_api
 from app.service import github_api
 from app.service import email_notifier
+from app.service import import_service
 
 
 def create_app():
@@ -63,7 +64,8 @@ def execute_imports():
     executor = import_executor.ImportExecutor(
         uploader=file_uploader.GCSFileUploader(
             project_id=config.gcs_project_id,
-            bucket_name=config.storage_bucket_name),
+            bucket_name=config.storage_dev_bucket_name,
+            path_prefix=config.storage_executor_output_prefix),
         github=github_api.GitHubRepoAPI(
             repo_owner_username=config.github_repo_owner_username,
             repo_name=config.github_repo_name,
@@ -72,7 +74,13 @@ def execute_imports():
         config=config,
         dashboard=dashboard_api.DashboardAPI(config.dashboard_oauth_client_id),
         notifier=email_notifier.EmailNotifier(config.email_account,
-                                              config.email_token))
+                                              config.email_token),
+        importer=import_service.ImportServiceClient(
+            project_id=config.gcs_project_id,
+            executor_output_prefix=config.storage_executor_output_prefix,
+            importer_output_prefix=config.storage_importer_output_prefix,
+            unresolved_mcf_bucket_name=config.storage_dev_bucket_name,
+            resolved_mcf_bucket_name=config.storage_importer_bucket_name))
     result = executor.execute_imports_on_commit(commit_sha=commit_sha,
                                                 repo_name=repo_name,
                                                 branch_name=branch_name,
@@ -94,7 +102,7 @@ def scheduled_updates():
     executor = import_executor.ImportExecutor(
         uploader=file_uploader.GCSFileUploader(
             project_id=config.gcs_project_id,
-            bucket_name=config.storage_bucket_name),
+            bucket_name=config.storage_prod_bucket_name),
         github=github_api.GitHubRepoAPI(
             repo_owner_username=config.github_repo_owner_username,
             repo_name=config.github_repo_name,

@@ -115,6 +115,7 @@ class StandaloneUpdateTest(unittest.TestCase):
         self.assertEqual(expected_result, response.json)
 
 
+@mock.patch('app.service.import_service.ImportServiceClient', mock.MagicMock())
 @mock.patch('app.service.email_notifier.EmailNotifier', mock.MagicMock())
 @mock.patch('app.service.dashboard_api.DashboardAPI', mock.MagicMock)
 @mock.patch('app.utils.pacific_time',

@@ -46,11 +46,9 @@ class EmailNotifier:
 
         Raises:
             Same exceptions as smtplib.SMTP_SSL.__init__,
-            smtplib.SMTP_SSL.ehlo, smtplib.SMTP_SSL.login,
-            smtplib.SMTP_SSL.sendmail.
+            smtplib.SMTP_SSL.login, smtplib.SMTP_SSL.sendmail.
         """
         with smtplib.SMTP_SSL('smtp.gmail.com') as server:
-            server.ehlo()
             server.login(self.account, self.password)
             email = (f'From: {self.account}\n'
                      f'To: {utils.list_to_str(receiver_addresses)}\n'

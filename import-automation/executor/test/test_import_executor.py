@@ -49,10 +49,8 @@ class ImportExecutorTest(unittest.TestCase):
             requirements.flush()
             with tempfile.TemporaryDirectory() as venv_dir:
                 interpreter_path, proc = import_executor._create_venv(
-                    requirements.name, venv_dir, 20)
+                    (requirements.name,), venv_dir, 20)
                 self.assertEqual(0, proc.returncode)
-                self.assertIn('Requirement already satisfied: requests',
-                              proc.stdout)
                 with tempfile.NamedTemporaryFile(mode='w+') as script:
 
                     script.write('import bs4\nimport requests\nprint(123)\n')

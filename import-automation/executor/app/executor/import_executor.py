@@ -22,7 +22,7 @@ import subprocess
 import tempfile
 import logging
 import traceback
-from typing import Tuple, List, Dict, Optional, Callable
+from typing import Tuple, List, Dict, Optional, Callable, Iterable
 import dataclasses
 
 from app import utils
@@ -32,9 +32,14 @@ from app.executor import import_target
 from app.service import github_api
 from app.service import file_uploader
 from app.service import email_notifier
+from app.service import import_service
 
 _SYSTEM_RUN_INIT_FAILED_MESSAGE = ('Failed to initialize the system run '
                                    'with the import progress dashboard')
+
+_SEE_DASHBOARD_MESSAGE = (
+    'See dashboard for logs: '
+    'https://dashboard-frontend-dot-datcom-data.uc.r.appspot.com/')
 
 
 @dataclasses.dataclass
@@ -76,6 +81,8 @@ class ImportExecutor:
             import progress dashboard. If not provided, the executor will not
             communicate with the dashboard.
         notifier: EmailNotifier object for sending notificaiton emails.
+        importer: ImportServiceClient object for invoking the
+            Data Commons importer.
     """
 
     def __init__(self,
@@ -83,12 +90,14 @@ class ImportExecutor:
                  github: github_api.GitHubRepoAPI,
                  config: configs.ExecutorConfig,
                  dashboard: dashboard_api.DashboardAPI = None,
-                 notifier: email_notifier.EmailNotifier = None):
+                 notifier: email_notifier.EmailNotifier = None,
+                 importer: 'import_service.ImportServiceClient' = None):
         self.uploader = uploader
         self.github = github
         self.config = config
         self.dashboard = dashboard
         self.notifier = notifier
+        self.importer = importer
 
     def execute_imports_on_commit(self,
                                   commit_sha: str,
@@ -196,6 +205,7 @@ class ImportExecutor:
                 if import_name in ('all', import_name_in_spec):
                     try:
                         self._import_one(
+                            repo_dir=repo_dir,
                             relative_import_dir=import_dir,
                             absolute_import_dir=absolute_import_dir,
                             import_spec=spec,
@@ -257,7 +267,8 @@ class ImportExecutor:
             executed_imports = []
             for relative_dir, spec in imports_to_execute:
                 try:
-                    self._import_one(relative_import_dir=relative_dir,
+                    self._import_one(repo_dir=repo_dir,
+                                     relative_import_dir=relative_dir,
                                      absolute_import_dir=os.path.join(
                                          repo_dir, relative_dir),
                                      import_spec=spec,
@@ -281,6 +292,7 @@ class ImportExecutor:
             return ExecutionResult('succeeded', executed_imports, 'No issues')
 
     def _import_one(self,
+                    repo_dir: str,
                     relative_import_dir: str,
                     absolute_import_dir: str,
                     import_spec: dict,
@@ -288,6 +300,7 @@ class ImportExecutor:
         """Executes an import.
 
         Args:
+            repo_dir: Absolute path to the repository, as a string.
             relative_import_dir: Path to the directory containing the manifest
                 as a string, relative to the root directory of the repository.
             absolute_import_dir: Absolute path to the directory containing
@@ -297,7 +310,8 @@ class ImportExecutor:
                 used to communicate with the import progress dashboard.
         """
         import_name = import_spec['import_name']
-        absolute_import_name = os.path.join(relative_import_dir, import_name)
+        absolute_import_name = import_target.get_absolute_import_name(
+            relative_import_dir, import_name)
         curator_emails = import_spec['curator_emails']
         attempt_id = None
         if self.dashboard:
@@ -305,23 +319,22 @@ class ImportExecutor:
                 dashboard=self.dashboard,
                 run_id=run_id,
                 import_name=import_name,
-                absolute_import_name=import_target.get_absolute_import_name(
-                    relative_import_dir, import_name),
+                absolute_import_name=absolute_import_name,
                 provenance_url=import_spec['provenance_url'],
                 provenance_description=import_spec['provenance_description'])
             attempt_id = attempt['attempt_id']
         try:
-            self._import_one_helper(relative_import_dir=relative_import_dir,
+            self._import_one_helper(repo_dir=repo_dir,
+                                    relative_import_dir=relative_import_dir,
                                     absolute_import_dir=absolute_import_dir,
                                     import_spec=import_spec,
                                     run_id=run_id,
                                     attempt_id=attempt_id)
-            # TODO(intrepiditee): Dashboard URLs
             if self.notifier:
                 self.notifier.send(
                     subject=(f'Import Automation - {absolute_import_name} '
                              f'- Succeeded'),
-                    body='See dashboard for logs',
+                    body=_SEE_DASHBOARD_MESSAGE,
                     receiver_addresses=curator_emails)
 
         except Exception as exc:
@@ -333,11 +346,12 @@ class ImportExecutor:
                 self.notifier.send(
                     subject=(f'Import Automation - {absolute_import_name} '
                              f'- Failed'),
-                    body='See dashboard for logs',
+                    body=_SEE_DASHBOARD_MESSAGE,
                     receiver_addresses=curator_emails)
             raise exc
 
     def _import_one_helper(self,
+                           repo_dir: str,
                            relative_import_dir: str,
                            absolute_import_dir: str,
                            import_spec: dict,
@@ -358,13 +372,16 @@ class ImportExecutor:
                                     self.config.file_download_timeout)
                 if self.dashboard:
                     self.dashboard.info(f'Downloaded: {url}',
-                                        attempt_id=attempt_id)
+                                        attempt_id=attempt_id,
+                                        run_id=run_id)
 
         with tempfile.TemporaryDirectory() as tmpdir:
             requirements_path = os.path.join(absolute_import_dir,
                                              self.config.requirements_filename)
+            central_requirements_path = os.path.join(
+                repo_dir, self.config.requirements_filename)
             interpreter_path, process = _create_venv(
-                requirements_path,
+                (central_requirements_path, requirements_path),
                 tmpdir,
                 timeout=self.config.venv_create_timeout)
 
@@ -387,13 +404,43 @@ class ImportExecutor:
                              run_id=run_id)
                 process.check_returncode()
 
-        self._upload_import_inputs(
+        inputs = self._upload_import_inputs(
             import_dir=absolute_import_dir,
             output_dir=f'{relative_import_dir}/{import_spec["import_name"]}',
             import_inputs=import_spec.get('import_inputs', []),
             attempt_id=attempt_id)
 
-        # TODO(intrepiditee): Call the dev importer
+        if self.importer:
+            self.importer.delete_previous_output(relative_import_dir,
+                                                 import_spec)
+
+            if self.dashboard:
+                self.dashboard.info(
+                    f'Submitting job to delete the previous import',
+                    attempt_id=attempt_id,
+                    run_id=run_id)
+            self.importer.delete_import(
+                relative_import_dir,
+                import_spec,
+                block=True,
+                timeout=self.config.importer_delete_timeout)
+            if self.dashboard:
+                self.dashboard.info(f'Deleted previous import',
+                                    attempt_id=attempt_id,
+                                    run_id=run_id)
+                self.dashboard.info(f'Submitting job to perform the import',
+                                    attempt_id=attempt_id,
+                                    run_id=run_id)
+            self.importer.smart_import(
+                relative_import_dir,
+                inputs,
+                import_spec,
+                block=True,
+                timeout=self.config.importer_import_timeout)
+            if self.dashboard:
+                self.dashboard.info(f'Import succeeded',
+                                    attempt_id=attempt_id,
+                                    run_id=run_id)
 
         if self.dashboard:
             self.dashboard.update_attempt(
@@ -402,11 +449,12 @@ class ImportExecutor:
                     'time_completed': utils.utctime()
                 }, attempt_id)
 
-    def _upload_import_inputs(self,
-                              import_dir: str,
-                              output_dir: str,
-                              import_inputs: List[Dict[str, str]],
-                              attempt_id: str = None) -> None:
+    def _upload_import_inputs(
+            self,
+            import_dir: str,
+            output_dir: str,
+            import_inputs: List[Dict[str, str]],
+            attempt_id: str = None) -> 'import_service.ImportInputs':
         """Uploads the generated import data files.
 
         Data files are uploaded to <output_dir>/<version>/, where <version> is a
@@ -423,19 +471,25 @@ class ImportExecutor:
             attempt_id: ID of the import attempt executed by the system run
                 with the run_id, as a string. This is only used to communicate
                 with the import progress dashboard.
+
+        Returns:
+            ImportInputs objects containing the paths to the uploaded inputs.
         """
+        uploaded = import_service.ImportInputs()
         version = _clean_time(utils.pacific_time())
         for import_input in import_inputs:
             for input_type in self.config.import_input_types:
                 path = import_input.get(input_type)
                 if path:
-                    self._upload_file_helper(
-                        src=os.path.join(import_dir, path),
-                        dest=f'{output_dir}/{version}/{os.path.basename(path)}',
-                        attempt_id=attempt_id)
+                    dest = f'{output_dir}/{version}/{os.path.basename(path)}'
+                    self._upload_file_helper(src=os.path.join(import_dir, path),
+                                             dest=dest,
+                                             attempt_id=attempt_id)
+                    setattr(uploaded, input_type, dest)
         self.uploader.upload_string(
             version,
             os.path.join(output_dir, self.config.storage_version_filename))
+        return uploaded
 
     def _upload_file_helper(self,
                             src: str,
@@ -481,8 +535,7 @@ def run_and_handle_exception(run_id: Optional[str],
     """Runs a method that executes imports and handles its exceptions.
 
     run_id and dashboard are for logging to the import progress dashboard.
-    They can be None to not perform such logging. notifer can also be None to
-    not send emails.
+    They can be None to not perform such logging.
 
     Args:
         run_id: ID of the system run as a string.
@@ -532,7 +585,7 @@ def _run_with_timeout(args: List[str],
                           cwd=cwd)
 
 
-def _create_venv(requirements_path: str, venv_dir: str,
+def _create_venv(requirements_path: Iterable[str], venv_dir: str,
                  timeout: float) -> Tuple[str, subprocess.CompletedProcess]:
     """Creates a Python virtual environment.
 
@@ -542,8 +595,8 @@ def _create_venv(requirements_path: str, venv_dir: str,
     a central requirement file for all user scripts.
 
     Args:
-        requirements_path: Path to a pip requirement file listing the
-            dependencies to install as a string.
+        requirements_path: List of paths to pip requirement files listing the
+            dependencies to install, each as a string.
         venv_dir: Path to the directory to create the virtual environment in
             as a string.
         timeout: Maximum time the creation script can run for in seconds
@@ -559,10 +612,10 @@ def _create_venv(requirements_path: str, venv_dir: str,
     with tempfile.NamedTemporaryFile(mode='w', suffix='.sh') as script:
         script.write(f'python3 -m venv --system-site-packages {venv_dir}\n')
         script.write(f'. {venv_dir}/bin/activate\n')
-        if os.path.exists(requirements_path):
-            script.write('python3 -m pip install --upgrade pip\n')
-            script.write('python3 -m pip install --no-cache-dir '
-                         f'--requirement {requirements_path}\n')
+        for path in requirements_path:
+            if os.path.exists(path):
+                script.write('python3 -m pip install --no-cache-dir '
+                             f'--requirement {path}\n')
         script.flush()
 
         process = _run_with_timeout(['bash', script.name], timeout)
@@ -714,7 +767,6 @@ def _log_process(process: subprocess.CompletedProcess,
         message = 'Subprocess failed'
     message = _construct_process_message(message, process)
     if process.returncode:
-        logging.critical(message)
         if dashboard:
             dashboard.critical(message, attempt_id=attempt_id, run_id=run_id)
     else:
