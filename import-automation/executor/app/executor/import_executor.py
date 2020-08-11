@@ -473,7 +473,7 @@ class ImportExecutor:
                 with the import progress dashboard.
 
         Returns:
-            ImportInputs objects containing the paths to the uploaded inputs.
+            ImportInputs object containing the paths to the uploaded inputs.
         """
         uploaded = import_service.ImportInputs()
         version = _clean_time(utils.pacific_time())

@@ -122,8 +122,8 @@ class ImportServiceClient:
         """Performs a table import or node import depending on the
         import_inputs parameter.
 
-        If cleaned_csv and template_mcf are both set, performs a table import.
-        If only node_mcf is set, performs a node import.
+        In import_inputs, if cleaned_csv and template_mcf are both set, performs
+        a table import. If only node_mcf is set, performs a node import.
 
         Args:
             import_dir: Path to the directory with the manifest, relative to
@@ -245,7 +245,7 @@ class ImportServiceClient:
                       import_dir: str,
                       import_spec: Dict,
                       block: bool = False,
-                      timeout: float = None):
+                      timeout: float = None) -> Dict:
         """Deletes an import.
 
         Args:
@@ -320,7 +320,7 @@ class ImportServiceClient:
         return response.json()
 
     def _fix_input_path(self, path: str) -> str:
-        return os.path.join('/bigstore/', self.unresolved_mcf_bucket_name,
+        return os.path.join('/bigstore', self.unresolved_mcf_bucket_name,
                             self.executor_output_prefix, path)
 
     def _block_on_import(self,
@@ -377,9 +377,13 @@ class ImportServiceClient:
         for log in logs['entry']:
             if (log['userEmail'] == curator_email and
                     log['importName'] == import_name):
-                is_log_delete = log['stages'] == ['DELETE']
-                if ((not delete and not is_log_delete) or
-                    (delete and is_log_delete)):
+                # For a deletion job, log['stages'] is ['DELETE'].
+                # For a table import job, log['stages'] is something like
+                # ["TABLE2MCF", "LOCAL_RESOLVE_BY_ID", "WRITE"].
+                # For a node import job, log['stages'] is something like
+                # ["LOCAL_RESOLVE_BY_ID", "WRITE"].
+                # The resolution types may vary.
+                if delete == (log['stages'] == ['DELETE']):
                     found = True
                     if log['state'] in ('QUEUED', 'RUNNING'):
                         finished = False
