@@ -105,6 +105,9 @@ class ImportServiceClient:
             executor_output_prefix: Output prefix in the
                 resolved_mcf_bucket_name bucket, as a string.
         """
+        client = storage.Client(project=project_id)
+        self.unresolved_bucket = client.bucket(unresolved_mcf_bucket_name)
+        self.resolved_bucket = client.bucket(resolved_mcf_bucket_name)
         self.unresolved_mcf_bucket_name = unresolved_mcf_bucket_name
         self.resolved_mcf_bucket_name = resolved_mcf_bucket_name
         self.importer_output_prefix = importer_output_prefix
@@ -291,9 +294,8 @@ class ImportServiceClient:
         """
         absolute_import_name = _get_fixed_absolute_import_name(
             import_dir, import_spec['import_name'])
-        client = storage.Client(project=project_id)
-        for bucket in (client.bucket(self.unresolved_mcf_bucket_name),
-                       client.bucket(self.resolved_mcf_bucket_name)):
+
+        for bucket in (self.unresolved_bucket, self.resolved_bucket):
             blobs = bucket.list_blobs(prefix=os.path.join(
                 self.importer_output_prefix, absolute_import_name))
             for blob in blobs:

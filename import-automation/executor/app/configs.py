@@ -117,7 +117,7 @@ class ExecutorConfig:
     importer_import_timeout: float = 10 * 60
     # Maximum time a blocking call to the importer to
     # delete an import can take in seconds.
-    importer_delete_timeout: float = 10 * 60
+    importer_delete_timeout: float = 20 * 60
 
 
 def _setup_logging():
