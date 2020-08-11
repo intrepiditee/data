@@ -17,6 +17,7 @@ Data Commons importer client.
 
 import os
 import time
+import logging
 import dataclasses
 from typing import Dict, Iterable
 
@@ -47,7 +48,7 @@ class ImportInputs:
 class PreviousImportNotFinishedError(Exception):
     """Exception thrown if an import with the same import name and the
     same email is still queued or running.
-    
+
     Attributes:
         import_name: Import name submitted to the importer as a string.
         curator_email: Email submitted to the importer as a string.
@@ -85,7 +86,7 @@ class ImportNotFoundError(Exception):
 class ImportFailedError(Exception):
     """Exception thrown if an import fails on the importer's side, i.e.,
     state != SUCCESSFUL.
-    
+
     Attributes:
         log: Log entry created by the importer for the import.
     """
@@ -113,7 +114,7 @@ class ImportServiceClient:
                  resolved_mcf_bucket_name: str, importer_output_prefix: str,
                  executor_output_prefix: str):
         """Constructs an ImportServiceClient.
-        
+
         Args:
             project_id: project_id: ID of the Google Cloud project that hosts
                 the bucket, as a string.
@@ -161,16 +162,18 @@ class ImportServiceClient:
             log['state'] is one of FAILED, SUCCESSFUL, PREEMPTED_WHILE_RUNNING,
             or PREEMPTED_WHILE_QUEUED. Otherwise, it could also be QUEUED and
             RUNNING.
-        
+
         Raises:
             ValueError: import_inputs does not match any condition, i.e., no
                 import performed.
-            requests.HTTPError: The importer returns a status code that is
-                larger than or equal to 400.
             PreviousImportNotFinishedError: An import with the same absolute
                 import name and the same email as the first email in the
                 curator_email list in the import specification is still queued
                 or running.
+            requests.HTTPError: The importer returns a status code that is
+                larger than or equal to 400.
+            ImportFailedError: Import fails on the importer's side.
+            TimeoutError: Timeout expired.
         """
         if import_inputs.cleaned_csv and import_inputs.template_mcf:
             return self.import_table(import_dir, import_inputs, import_spec,
@@ -262,7 +265,7 @@ class ImportServiceClient:
             block: Whether to block the calling thread until the deletion is
                 failed or finished.
             timeout: If block is set, the maximum time to block in seconds.
-        
+
         Returns:
             The response from the importer as a dict.
 
@@ -303,10 +306,10 @@ class ImportServiceClient:
 
     def get_import_log(self, curator_email: str) -> Dict:
         """Gets import logs.
-        
+
         Args:
             curator_email: Email submitted to the importer.
-        
+
         Returns:
             The response from the importer as a dict.
 
@@ -315,7 +318,11 @@ class ImportServiceClient:
                 larger than or equal to 400.
         """
         request = {'userEmail': curator_email}
+        logging.info(f'ImportServiceClient: Sending request {request} '
+                     'to {_PROXY_GET_IMPORT_LOG}')
         response = requests.post(_PROXY_GET_IMPORT_LOG, json=request)
+        logging.info(f'ImportServiceClient: Received response {response.text} '
+                     'from {_PROXY_GET_IMPORT_LOG}')
         response.raise_for_status()
         return response.json()
 
@@ -328,7 +335,7 @@ class ImportServiceClient:
                        timeout: float = None) -> Dict:
         """Sends an import request to the importer and optionally wait for
         its completion.
-        
+
         Args:
             url: Importer endpoint address.
             import_request: Import request to be sent.
@@ -339,10 +346,10 @@ class ImportServiceClient:
             block: Whether to block the calling thread until the import is
                 failed or finished.
             timeout: If block is set, the maximum time to block in seconds.
-        
+
         Returns:
             See smart_import.
-        
+
         Raises:
             PreviousImportNotFinishedError: An import with the same absolute
                 import name and the same email as the first email in the
@@ -440,7 +447,7 @@ def _get_import_id(import_name: str, curator_email: str,
 
     Returns:
         ID assigned to the import.
-    
+
     Raises:
         ImportNotFoundError: Import not found in the import logs.
     """
