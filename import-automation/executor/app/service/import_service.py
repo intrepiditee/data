@@ -340,14 +340,14 @@ class ImportServiceClient:
             Same exceptions as _are_imports_finished.
             If block is set, Same exceptions as _block_on_import.
         """
-        logs_before = self.get_import_log(curator_email)
+        logs_before = self.get_import_log(curator_email)['entry']
         if not _are_imports_finished(logs_before, import_name, curator_email):
             raise PreviousImportNotFinishedError(import_name, curator_email)
 
         response = requests.post(url, json=import_request)
         response.raise_for_status()
 
-        logs_after = self.get_import_log(curator_email)
+        logs_after = self.get_import_log(curator_email)['entry']
         import_id = _get_import_id(import_name, curator_email, logs_before,
                                    logs_after)
         log = _get_log(import_id, import_name, curator_email, logs_after)
