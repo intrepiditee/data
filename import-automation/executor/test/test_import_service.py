@@ -62,62 +62,97 @@ class ImportServiceTest(unittest.TestCase):
                                                       node_mcf='import.mcf'),
                           import_spec={})
 
-    @mock.patch(f'{_CLIENT}._import_finished')
+    @mock.patch(f'{_CLIENT}.get_import_log')
     @mock.patch(f'{_CLIENT}._SLEEP_DURATION', 0.00001)
-    def test_block_on_import(self, import_finished):
-        import_finished.side_effect = [False, False, False, True]
-        self.importer._block_on_import('import_name',
-                                       'curator_email',
-                                       timeout=1)
-        import_finished.side_effect = [False, False, False, True]
+    def test_block_on_import(self, get_import_log):
+        expected = {'id': 'id1', 'state': 'SUCCESSFUL'}
+        return_values = [{
+            'entry': [{
+                'id': 'id1',
+                'state': 'QUEUED'
+            }, {
+                'id': 'id2',
+            }]
+        }, {
+            'entry': [{
+                'id': 'id1',
+                'state': 'RUNNING'
+            }, {
+                'id': 'id2',
+            }]
+        }, {
+            'entry': [{
+                'id': 'id3',
+            }, expected]
+        }]
+        get_import_log.side_effect = return_values
+        self.assertEqual(
+            expected,
+            self.importer._block_on_import('id1',
+                                           'import_name',
+                                           'curator_email',
+                                           timeout=1))
+        get_import_log.side_effect = return_values
         self.assertRaises(TimeoutError,
                           self.importer._block_on_import,
+                          'id1',
                           'import_name',
                           'curator_email',
                           timeout=0)
-
-    @mock.patch(f'{_CLIENT}.get_import_log')
-    def test_import_finished(self, get_import_log):
-        get_import_log.return_value = {
-            'entry': [{
-                'userEmail': 'email1',
-                'importName': 'name1',
-                'stages': ["TABLE2MCF", "LOCAL_RESOLVE_BY_ID", "WRITE"],
-                'state': 'QUEUED'
-            }, {
-                'userEmail': 'email2',
-                'importName': 'name2',
-                'stages': ["TABLE2MCF", "LOCAL_RESOLVE_BY_ID", "WRITE"],
-                'state': 'SUCCESSFUL'
-            }, {
-                'userEmail': 'email',
-                'importName': 'name',
-                'stages': ['DELETE'],
-                'state': 'QUEUED'
-            }, {
-                'userEmail': 'email',
-                'importName': 'name',
-                'stages': ['DELETE'],
-                'state': 'SUCCESSFUL'
-            }, {
-                'userEmail': 'email',
-                'importName': 'name',
-                'stages': ["TABLE2MCF", "LOCAL_RESOLVE_BY_ID", "WRITE"],
-                'state': 'RUNNING'
-            }]
-        }
-        self.assertRaises(import_service.ImportNotFoundError,
-                          self.importer._import_finished,
-                          'name1',
-                          'email1',
-                          delete=True)
-        self.assertFalse(
-            self.importer._import_finished('name', 'email', delete=True))
-        self.assertFalse(self.importer._import_finished('name', 'email'))
-        self.assertTrue(self.importer._import_finished('name2', 'email2'))
 
     def test_get_fixed_absolute_import_name(self):
         self.assertEqual(
             'foo_bar_treasury_import',
             import_service._get_fixed_absolute_import_name(
                 'foo/bar', 'treasury_import'))
+
+    def test_get_import_id(self):
+        logs_before = [{
+            'id': 'id1',
+            'importName': 'name1',
+            'userEmail': 'email1'
+        }, {
+            'id': 'id2',
+            'importName': 'name2',
+            'userEmail': 'email2'
+        }]
+        logs_after = [{
+            'id': 'id2',
+            'importName': 'name2',
+            'userEmail': 'email2'
+        }, {
+            'id': 'id3',
+            'importName': 'name1',
+            'userEmail': 'email1'
+        }]
+        self.assertEqual(
+            'id3',
+            import_service._get_import_id('name1', 'email1', logs_before,
+                                          logs_after))
+        self.assertRaises(import_service.ImportNotFoundError,
+                          import_service._get_import_id, 'name2', 'email2',
+                          logs_before, logs_after)
+
+    def test_are_imports_finished(self):
+        logs = [{
+            'importName': 'name1',
+            'userEmail': 'email1',
+            'state': 'RUNNING'
+        }, {
+            'importName': 'name1',
+            'userEmail': 'email1',
+            'state': 'QUEUED'
+        }, {
+            'importName': 'name3',
+            'userEmail': 'email3',
+            'state': 'FAILED'
+        }, {
+            'importName': 'name4',
+            'userEmail': 'email4',
+            'state': 'SUCCESSFUL'
+        }]
+
+        self.assertFalse(
+            import_service._are_imports_finished(logs, 'name1', 'email1'))
+        self.assertTrue(
+            import_service._are_imports_finished(logs, 'name3', 'email3'))

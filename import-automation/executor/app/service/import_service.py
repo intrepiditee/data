@@ -18,7 +18,7 @@ Data Commons importer client.
 import os
 import time
 import dataclasses
-from typing import Dict
+from typing import Dict, Iterable
 
 import requests
 from google.cloud import storage
@@ -67,13 +67,21 @@ class ImportNotFoundError(Exception):
     Attributes:
         import_name: Import name submitted to the importer as a string.
         curator_email: Email submitted to the importer as a string.
+        import_id: ID assigned by the importer, if applicable.
     """
 
-    def __init__(self, import_name: str, curator_email: str):
-        super().__init__(f'Import {import_name} ({curator_email}) '
-                         'not found in import logs')
+    def __init__(self,
+                 import_name: str,
+                 curator_email: str,
+                 import_id: str = None):
+        import_info = (f'import name: {import_name}, '
+                       f'curator email: {curator_email}')
+        if import_id:
+            import_info += f', import ID: {import_id}'
+        super().__init__(f'Import <{import_info}> not found in import logs')
         self.import_name = import_name
         self.curator_email = curator_email
+        self.import_id = import_id
 
 
 class ImportServiceClient:
@@ -136,7 +144,10 @@ class ImportServiceClient:
                 a float.
 
         Returns:
-            The response from the importer as a dict.
+            Log entry created by the importer for the import. If block is set,
+            log['state'] is one of FAILED, SUCCESSFUL, PREEMPTED_WHILE_RUNNING,
+            or PREEMPTED_WHILE_QUEUED. Otherwise, it could also be QUEUED and
+            RUNNING.
         
         Raises:
             ValueError: import_inputs does not match any condition, i.e., no
@@ -151,7 +162,8 @@ class ImportServiceClient:
         if import_inputs.cleaned_csv and import_inputs.template_mcf:
             return self.import_table(import_dir, import_inputs, import_spec,
                                      block, timeout)
-        if import_inputs.node_mcf and not import_inputs.cleaned_csv and not import_inputs.template_mcf:
+        if (import_inputs.node_mcf and not import_inputs.cleaned_csv and
+                not import_inputs.template_mcf):
             return self.import_node(import_dir, import_inputs, import_spec,
                                     block, timeout)
         raise ValueError(f'Invalid import inputs {import_inputs}')
@@ -167,42 +179,33 @@ class ImportServiceClient:
         absolute_import_name = _get_fixed_absolute_import_name(
             import_dir, import_spec['import_name'])
         curator_email = import_spec['curator_emails'][0]
-
-        if not self._import_finished(absolute_import_name, curator_email):
-            raise PreviousImportNotFinishedError(absolute_import_name,
-                                                 curator_email)
-
         request = {
             'manifest': {
-                'import_name': absolute_import_name,
-                'curator_email': curator_email,
+                'importName': absolute_import_name,
+                'curatorEmail': curator_email,
                 'table': {
-                    'table_name':
+                    'tableName':
                         absolute_import_name,
-                    'csv_path':
+                    'csvPath':
                         self._fix_input_path(import_inputs.cleaned_csv),
-                    'mapping_path':
+                    'mappingPath':
                         self._fix_input_path(import_inputs.template_mcf),
-                    'field_delim':
+                    'fieldDelim':
                         ','
                 },
-                'provenance_url': import_spec['provenance_url'],
-                'provenance_description': import_spec['provenance_description'],
-                'mcf_url': [self._fix_input_path(import_inputs.node_mcf)],
+                'provenanceUrl': import_spec['provenance_url'],
+                'provenanceDescription': import_spec['provenance_description'],
+                'mcfUrl': [self._fix_input_path(import_inputs.node_mcf)],
             },
-            'use_flume': False,
-            'db_type': ImportServiceClient._BIGQUERY,
-            'resolution_need': ImportServiceClient._LOCAL_RES_BY_ID,
-            'skip_csv_value_checks': True,
-            'write_to_db': True
+            'useFlume': False,
+            'dbType': ImportServiceClient._BIGQUERY,
+            'resolutionNeed': ImportServiceClient._LOCAL_RES_BY_ID,
+            'skipCsvValueChecks': True,
+            'writeToDb': True
         }
-        response = requests.post(_PROXY_IMPORT_TABLE, json=request)
-        response.raise_for_status()
-
-        if block:
-            self._block_on_import(absolute_import_name, curator_email, timeout)
-
-        return response.json()
+        return self._import_helper(_PROXY_IMPORT_TABLE, request,
+                                   absolute_import_name, curator_email, block,
+                                   timeout)
 
     def import_node(self,
                     import_dir: str,
@@ -214,32 +217,23 @@ class ImportServiceClient:
         absolute_import_name = _get_fixed_absolute_import_name(
             import_dir, import_spec['import_name'])
         curator_email = import_spec['curator_emails'][0]
-
-        if not self._import_finished(absolute_import_name, curator_email):
-            raise PreviousImportNotFinishedError(absolute_import_name,
-                                                 curator_email)
-
         request = {
-            'node_file_pattern': self._fix_input_path(import_inputs.node_mcf),
-            'node_format': ImportServiceClient._MCF,
-            'import_name': absolute_import_name,
-            'use_flume': False,
-            'sanity_check_only': False,
-            'user_email': curator_email,
-            'provenance_url': import_spec['provenance_url'],
-            'provenance_description': import_spec['provenance_description'],
-            'db_type': ImportServiceClient._BIGQUERY,
-            'resolution_need': ImportServiceClient._LOCAL_RES_BY_ID,
-            'write_to_db': True,
-            'generate_dcids_for_new_places': False
+            'nodeFilePattern': self._fix_input_path(import_inputs.node_mcf),
+            'nodeFormat': ImportServiceClient._MCF,
+            'importName': absolute_import_name,
+            'useFlume': False,
+            'sanityCheckOnly': False,
+            'userEmail': curator_email,
+            'provenanceUrl': import_spec['provenance_url'],
+            'provenanceDescription': import_spec['provenance_description'],
+            'dbType': ImportServiceClient._BIGQUERY,
+            'resolutionNeed': ImportServiceClient._LOCAL_RES_BY_ID,
+            'writeToDb': True,
+            'generateDcidsForNewPlaces': False
         }
-        response = requests.post(_PROXY_IMPORT_NODE, json=request)
-        response.raise_for_status()
-
-        if block:
-            self._block_on_import(absolute_import_name, curator_email, timeout)
-
-        return response.json()
+        return self._import_helper(_PROXY_IMPORT_NODE, request,
+                                   absolute_import_name, curator_email, block,
+                                   timeout)
 
     def delete_import(self,
                       import_dir: str,
@@ -267,20 +261,13 @@ class ImportServiceClient:
             import_dir, import_spec['import_name'])
         curator_email = import_spec['curator_emails'][0]
         request = {
-            'import_name': absolute_import_name,
-            'user_email': curator_email,
-            'db_type': ImportServiceClient._BIGQUERY
+            'importName': absolute_import_name,
+            'userEmail': curator_email,
+            'dbType': ImportServiceClient._BIGQUERY
         }
-        response = requests.post(_PROXY_IMPORT_DELETE, json=request)
-        response.raise_for_status()
-
-        if block:
-            self._block_on_import(absolute_import_name,
-                                  curator_email,
-                                  timeout,
-                                  delete=True)
-
-        return response.json()
+        return self._import_helper(_PROXY_IMPORT_DELETE, request,
+                                   absolute_import_name, curator_email, block,
+                                   timeout)
 
     def delete_previous_output(self, import_dir: str,
                                import_spec: dict) -> None:
@@ -314,27 +301,82 @@ class ImportServiceClient:
             requests.HTTPError: The importer returns a status code that is
                 larger than or equal to 400.
         """
-        request = {'user_email': curator_email}
+        request = {'userEmail': curator_email}
         response = requests.post(_PROXY_GET_IMPORT_LOG, json=request)
         response.raise_for_status()
         return response.json()
 
+    def _import_helper(self,
+                       url: str,
+                       import_request: Dict,
+                       import_name: str,
+                       curator_email: str,
+                       block: bool = False,
+                       timeout: float = None) -> Dict:
+        """Sends an import request to the importer and optionally wait for
+        its completion.
+        
+        Args:
+            url: Importer endpoint address.
+            import_request: Import request to be sent.
+            import_name: Import name to be submitted as part of the request.
+                This must match the import_name in the request.
+            curator_email: Email to be submitted as part of the request.
+                This must match the curator_email or user_email in the request.
+            block: Whether to block the calling thread until the import is
+                failed or finished.
+            timeout: If block is set, the maximum time to block in seconds.
+        
+        Returns:
+            See smart_import.
+        
+        Raises:
+            PreviousImportNotFinishedError: An import with the same absolute
+                import name and the same email as the first email in the
+                curator_email list in the import specification is still queued
+                or running.
+            requests.HTTPError: The importer returns a status code that is
+                larger than or equal to 400.
+            Same exceptions as _are_imports_finished.
+            If block is set, Same exceptions as _block_on_import.
+        """
+        logs_before = self.get_import_log(curator_email)
+        if not _are_imports_finished(logs_before, import_name, curator_email):
+            raise PreviousImportNotFinishedError(import_name, curator_email)
+
+        response = requests.post(url, json=import_request)
+        response.raise_for_status()
+
+        logs_after = self.get_import_log(curator_email)
+        import_id = _get_import_id(import_name, curator_email, logs_before,
+                                   logs_after)
+        log = _get_log(import_id, import_name, curator_email, logs_after)
+        if block:
+            self._block_on_import(import_id, import_name, curator_email,
+                                  timeout)
+        return log
+
     def _fix_input_path(self, path: str) -> str:
+        """Fixes the path to a CSV or MCF to be the desirable path in the
+        executor output bucket."""
         return os.path.join('/bigstore', self.unresolved_mcf_bucket_name,
                             self.executor_output_prefix, path)
 
     def _block_on_import(self,
+                         import_id: str,
                          import_name: str,
                          curator_email: str,
-                         timeout: float = None,
-                         delete: bool = False) -> None:
+                         timeout: float = None) -> Dict:
         """Blocks the calling thread until the import fails or succeeds.
 
         Args:
+            import_id: ID of the import request assigned by the importer.
             import_name: Import name submitted to the importer.
-            curator_email: User email submitted to the importer.
+            curator_email: Email submitted to the importer.
             timeout: Maximum time to block in seconds.
-            delete: Whether to block on an import or the deletion of an import.
+
+        Returns:
+            Log entry for the import.
 
         Raises:
             Same exceptions as ImportServiceClient.get_import_log.
@@ -342,55 +384,14 @@ class ImportServiceClient:
         """
         start = time.time()
         while True:
-            if self._import_finished(import_name, curator_email, delete):
-                return
+            log = _get_log(import_id, import_name, curator_email,
+                           self.get_import_log(curator_email)['entry'])
+            if _is_import_finished(log):
+                return log
             if timeout is not None and time.time() - start > timeout:
                 raise TimeoutError('Timeout expired blocking on '
                                    f'{import_name} ({curator_email})')
             time.sleep(ImportServiceClient._SLEEP_DURATION)
-
-    def _import_finished(self,
-                         import_name: str,
-                         curator_email: str,
-                         delete: bool = False) -> bool:
-        """Checks if an import has finished (succeeded or failed).
-
-        Pairs of <import_name, curator_email> are not unique on the importer
-        side. This function returns False if there is any import with the
-        import_name and curator_email that has not finished.
-
-        Args:
-            import_name: Import name submitted to the importer.
-            curator_email: Email submitted to the importer.
-            delete: Whether to the job is a deletion.
-
-        Returns:
-            Whether the import has finished.
-
-        Raises:
-            Same exceptions as get_import_log.
-            ImportNotFoundError: Import not found in the import logs.
-        """
-        logs = self.get_import_log(curator_email)
-        found = False
-        finished = True
-        for log in logs['entry']:
-            if (log['userEmail'] == curator_email and
-                    log['importName'] == import_name):
-                # For a deletion job, log['stages'] is ['DELETE'].
-                # For a table import job, log['stages'] is something like
-                # ["TABLE2MCF", "LOCAL_RESOLVE_BY_ID", "WRITE"].
-                # For a node import job, log['stages'] is something like
-                # ["LOCAL_RESOLVE_BY_ID", "WRITE"].
-                # The resolution types may vary.
-                if delete == (log['stages'] == ['DELETE']):
-                    found = True
-                    if log['state'] in ('QUEUED', 'RUNNING'):
-                        finished = False
-                        break
-        if not found:
-            raise ImportNotFoundError(import_name, curator_email)
-        return finished
 
 
 def _get_fixed_absolute_import_name(import_dir: str, import_name: str) -> str:
@@ -403,3 +404,84 @@ def _get_fixed_absolute_import_name(import_dir: str, import_name: str) -> str:
 def _fix_absolute_import_name(name: str) -> str:
     """Replaces colons and backslashes with underscores."""
     return name.replace(':', '_').replace('/', '_')
+
+
+def _get_import_id(import_name: str, curator_email: str,
+                   logs_before: Iterable[Dict],
+                   logs_after: Iterable[Dict]) -> str:
+    """Finds the ID assigned to an import request by the importer.
+
+    This function looks for a new log entry between logs_before and logs_after
+    with the import_name and curator_email. The assumption is that between
+    logs_before and logs_after, no import request with the same import name and
+    email is submitted to the importer.
+
+    Args:
+        import_name: Import name submitted to the importer.
+        curator_email: Email submitted to the importer.
+        logs_before: Collection of logs before the import request is submitted.
+        logs_after: Collection of logs after the import request is submitted.
+
+    Returns:
+        ID assigned to the import.
+    
+    Raises:
+        ImportNotFoundError: Import not found in the import logs.
+    """
+    ids_before = set(log['id'] for log in logs_before)
+    ids_after = set(log['id'] for log in logs_after)
+    new_ids = ids_after - ids_before
+    for log in logs_after:
+        import_id = log['id']
+        if (import_id in new_ids and log['importName'] == import_name and
+                log['userEmail'] == curator_email):
+            return import_id
+    raise ImportNotFoundError(import_name, curator_email)
+
+
+def _get_log(import_id: str, import_name, curator_email,
+             logs: Iterable[Dict]) -> Dict:
+    """Finds the log entry with the import_id in the logs."""
+    for log in logs:
+        if log['id'] == import_id:
+            return log
+    raise ImportNotFoundError(import_name, curator_email, import_id)
+
+
+def _are_imports_finished(logs: Iterable[Dict], import_name: str,
+                          curator_email: str) -> bool:
+    """Checks if all import or deletion requests with the import_name and
+    curator_email have finished (succeeded or failed) on the importer's side.
+
+    Pairs of <import_name, curator_email> are not unique on the importer
+    side. This function returns False if there is any import with the
+    import_name and curator_email that has not finished.
+
+    Args:
+        logs: Collection of log entrties.
+        import_name: Import name submitted to the importer.
+        curator_email: Email submitted to the importer.
+
+    Returns:
+        Whether the import has finished.
+
+    Raises:
+        ImportNotFoundError: Import not found in the import logs.
+    """
+    found = False
+    finished = True
+    for log in logs:
+        if (log['userEmail'] == curator_email and
+                log['importName'] == import_name):
+            found = True
+            if not _is_import_finished(log):
+                finished = False
+                break
+    if not found:
+        raise ImportNotFoundError(import_name, curator_email)
+    return finished
+
+
+def _is_import_finished(log: Dict) -> bool:
+    """Returns whether the import has finished (failed or succeeded)."""
+    return log['state'] not in ('QUEUED', 'RUNNING')
