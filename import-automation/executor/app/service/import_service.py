@@ -54,7 +54,8 @@ class PreviousImportNotFinishedError(Exception):
     """
 
     def __init__(self, import_name: str, curator_email: str):
-        super().__init__(f'Previous import {import_name} ({curator_email}) '
+        import_info = _format_import_info(import_name, curator_email)
+        super().__init__(f'Previous import {import_info} '
                          'is still queued or running')
         self.import_name = import_name
         self.curator_email = curator_email
@@ -74,14 +75,26 @@ class ImportNotFoundError(Exception):
                  import_name: str,
                  curator_email: str,
                  import_id: str = None):
-        import_info = (f'import name: {import_name}, '
-                       f'curator email: {curator_email}')
-        if import_id:
-            import_info += f', import ID: {import_id}'
+        import_info = _format_import_info(import_name, curator_email, import_id)
         super().__init__(f'Import <{import_info}> not found in import logs')
         self.import_name = import_name
         self.curator_email = curator_email
         self.import_id = import_id
+
+
+class ImportFailedError(Exception):
+    """Exception thrown if an import fails on the importer's side, i.e.,
+    state != SUCCESSFUL.
+    
+    Attributes:
+        log: Log entry created by the importer for the import.
+    """
+
+    def __init__(self, log: Dict):
+        import_info = _format_import_info(log['importName'], log['userEmail'],
+                                          log['id'])
+        super().__init__(f'Import <{import_info}> failed: {log}')
+        self.log = log
 
 
 class ImportServiceClient:
@@ -380,6 +393,7 @@ class ImportServiceClient:
 
         Raises:
             Same exceptions as ImportServiceClient.get_import_log.
+            ImportFailedError: Import fails on the importer's side.
             TimeoutError: Timeout expired.
         """
         start = time.time()
@@ -387,6 +401,8 @@ class ImportServiceClient:
             log = _get_log(import_id, import_name, curator_email,
                            self.get_import_log(curator_email)['entry'])
             if _is_import_finished(log):
+                if log['state'] != 'SUCCESSFUL':
+                    raise ImportFailedError(log)
                 return log
             if timeout is not None and time.time() - start > timeout:
                 raise TimeoutError('Timeout expired blocking on '
@@ -485,3 +501,13 @@ def _are_imports_finished(logs: Iterable[Dict], import_name: str,
 def _is_import_finished(log: Dict) -> bool:
     """Returns whether the import has finished (failed or succeeded)."""
     return log['state'] not in ('QUEUED', 'RUNNING')
+
+
+def _format_import_info(import_name: str,
+                        curator_email: str,
+                        import_id: str = None) -> str:
+    import_info = (f'import_name: {import_name}, '
+                   f'curator_email: {curator_email}')
+    if import_id:
+        import_info += f', import_id: {import_id}'
+    return import_info

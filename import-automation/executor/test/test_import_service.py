@@ -72,6 +72,7 @@ class ImportServiceTest(unittest.TestCase):
                 'state': 'QUEUED'
             }, {
                 'id': 'id2',
+                'state': 'QUEUED'
             }]
         }, {
             'entry': [{
@@ -79,10 +80,14 @@ class ImportServiceTest(unittest.TestCase):
                 'state': 'RUNNING'
             }, {
                 'id': 'id2',
+                'state': 'QUEUED'
             }]
         }, {
             'entry': [{
-                'id': 'id3',
+                'id': 'id2',
+                'state': 'PREEMPTED_WHILE_QUEUED',
+                'importName': 'importName',
+                'userEmail': 'userEmail'
             }, expected]
         }]
         get_import_log.side_effect = return_values
@@ -99,6 +104,12 @@ class ImportServiceTest(unittest.TestCase):
                           'import_name',
                           'curator_email',
                           timeout=0)
+        self.assertRaises(import_service.ImportFailedError,
+                          self.importer._block_on_import,
+                          'id2',
+                          'import_name',
+                          'curator_email',
+                          timeout=1)
 
     def test_get_fixed_absolute_import_name(self):
         self.assertEqual(
@@ -156,3 +167,8 @@ class ImportServiceTest(unittest.TestCase):
             import_service._are_imports_finished(logs, 'name1', 'email1'))
         self.assertTrue(
             import_service._are_imports_finished(logs, 'name3', 'email3'))
+
+    def test_format_import_info(self):
+        self.assertEqual(
+            'import_name: name, curator_email: email, import_id: id',
+            import_service._format_import_info('name', 'email', 'id'))
