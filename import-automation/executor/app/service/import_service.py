@@ -492,17 +492,16 @@ def _are_imports_finished(logs: Iterable[Dict], import_name: str,
         ImportNotFoundError: Import not found in the import logs.
     """
     found = False
-    finished = True
     for log in logs:
         if (log['userEmail'] == curator_email and
                 log['importName'] == import_name):
             found = True
-            if not _is_import_finished(log):
-                finished = False
-                break
+            finished = _is_import_finished(log)
+            if not finished:
+                return False
     if not found:
         raise ImportNotFoundError(import_name, curator_email)
-    return finished
+    return True
 
 
 def _is_import_finished(log: Dict) -> bool:
